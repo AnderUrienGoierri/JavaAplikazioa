@@ -166,4 +166,6 @@ public class LoginFrame extends JFrame {
             default: JOptionPane.showMessageDialog(null, "ID Ezezaguna / Desconocido");
         }
     }
+   
 }
+
