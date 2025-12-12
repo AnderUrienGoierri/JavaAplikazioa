@@ -136,4 +136,9 @@ public class LoginFrame extends JFrame {
             default: JOptionPane.showMessageDialog(null, "Saila ezezaguna");
         }
     }
+    private void sysout() {
+		// TODO Auto-generated method stub
+
+	}
 }
+
