@@ -10,8 +10,14 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.Image; // Irudiak eskalatzeko beharrezkoa
 
+
+
+
 public class LoginFrame extends JFrame {
 
+	
+	
+	// GIT-eko adibiderako komentarioa jarri dut	
     private JPanel contentPane;
     private JTextField textEmail;
     private JPasswordField passwordField;
