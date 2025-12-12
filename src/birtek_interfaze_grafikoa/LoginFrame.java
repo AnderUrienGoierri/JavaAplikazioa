@@ -15,10 +15,22 @@ import java.awt.Image; // Irudiak eskalatzeko beharrezkoa
 
 public class LoginFrame extends JFrame {
 
+<<<<<<< HEAD
 	
 	
 	// GIT-eko adibiderako komentarioa jarri dut	
+=======
+<<<<<<< HEAD
+	
+	
+	
+	//git proba
+	
+    private JPanel edukiPanela;
+=======
+>>>>>>> cd9ad9d2aa74e17e6af5cc5037db0de405eaacb7
     private JPanel contentPane;
+>>>>>>> e08e637e5273fd9819e2708f504caa6af4ccfa5d
     private JTextField textEmail;
     private JPasswordField passwordField;
     private JComboBox<String> comboLang;
