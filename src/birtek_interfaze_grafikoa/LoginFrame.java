@@ -9,28 +9,11 @@ import java.sql.ResultSet;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Image; // Irudiak eskalatzeko beharrezkoa
-
-
-
+import java.io.File; // Fitxategiak egiaztatzeko
 
 public class LoginFrame extends JFrame {
 
-<<<<<<< HEAD
-	
-	
-	// GIT-eko adibiderako komentarioa jarri dut	
-=======
-<<<<<<< HEAD
-	
-	
-	
-	//git proba
-	
-    private JPanel edukiPanela;
-=======
->>>>>>> cd9ad9d2aa74e17e6af5cc5037db0de405eaacb7
     private JPanel contentPane;
->>>>>>> e08e637e5273fd9819e2708f504caa6af4ccfa5d
     private JTextField textEmail;
     private JPasswordField passwordField;
     private JComboBox<String> comboLang;
@@ -66,18 +49,37 @@ public class LoginFrame extends JFrame {
         lblIrudia = new JLabel("");
         lblIrudia.setBounds(0, 0, 350, 360); // Irudiaren tamaina eta posizioa
         try {
-            // Irudia kargatu (ziurtatu 'birtek1.jpeg' src karpetan dagoela)
-            ImageIcon originalIcon = new ImageIcon(LoginFrame.class.getResource("src/birtek1.jpeg"));
+            // Irudia kargatu
+            ImageIcon originalIcon = null;
             
-            // Irudia eskalatu leihoaren zatira egokitzeko
-            Image img = originalIcon.getImage();
-            Image newImg = img.getScaledInstance(350, 360, Image.SCALE_SMOOTH);
-            lblIrudia.setIcon(new ImageIcon(newImg));
+            // 1. Saiakera: Classpath bidez (Gomendatua: "/birtek1.jpeg")
+            // Oharra: "src" ez da jarri behar getResource-n, erroa "/" delako.
+            java.net.URL imgURL = LoginFrame.class.getResource("/birtek1.jpeg");
+            
+            if (imgURL != null) {
+                originalIcon = new ImageIcon(imgURL);
+            } else {
+                // 2. Saiakera: Fitxategi-sisteman zuzenean (Eclipse barruan bazaude)
+                if (new File("src/birtek1.jpeg").exists()) {
+                    originalIcon = new ImageIcon("src/birtek1.jpeg");
+                }
+            }
+
+            if (originalIcon != null) {
+                // Irudia eskalatu leihoaren zatira egokitzeko
+                Image img = originalIcon.getImage();
+                Image newImg = img.getScaledInstance(350, 360, Image.SCALE_SMOOTH);
+                lblIrudia.setIcon(new ImageIcon(newImg));
+            } else {
+                throw new Exception("Irudia ez da aurkitu");
+            }
+
         } catch (Exception e) {
             // Irudia ez bada aurkitzen, mezu bat erakutsi
             lblIrudia.setText("Irudia ez da aurkitu / No image found");
             lblIrudia.setHorizontalAlignment(SwingConstants.CENTER);
             lblIrudia.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            System.err.println("Errorea irudia kargatzean: Ziurtatu 'birtek1.jpeg' src karpetan dagoela eta Refresh (F5) egin duzula.");
         }
         contentPane.add(lblIrudia);
 
@@ -184,6 +186,4 @@ public class LoginFrame extends JFrame {
             default: JOptionPane.showMessageDialog(null, "ID Ezezaguna / Desconocido");
         }
     }
-   
 }
-
