@@ -1,24 +1,27 @@
 package birtek_interfaze_grafikoa;
 
-
 import java.awt.EventQueue;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.Image; // Irudiak eskalatzeko beharrezkoa
 
 public class LoginFrame extends JFrame {
 
-    private JPanel edukiPanela;
+    private JPanel contentPane;
     private JTextField textEmail;
     private JPasswordField passwordField;
     private JComboBox<String> comboLang;
-    private JLabel lblTitulo, lblEmail, lblPass;
+    
+    // Testu etiketak
+    private JLabel lblTitulo;
+    private JLabel lblEmail;
+    private JLabel lblPass;
+    private JLabel lblIrudia; // Irudiarentzako etiketa berria
     private JButton btnSartu;
 
     public static void main(String[] args) {
@@ -33,54 +36,83 @@ public class LoginFrame extends JFrame {
     }
 
     public LoginFrame() {
-        setTitle(Hizkuntza.get("app_title"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 350);
-        edukiPanela = new JPanel();
-        edukiPanela.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(edukiPanela);
-        edukiPanela.setLayout(null);
+        // Leiho zabalagoa irudia sartzeko (750x400)
+        setBounds(100, 100, 750, 400);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
 
-        // --- HIZKUNTZA SELECTOR ---
+        // --- IRUDIA (EZKERRALDEAN) ---
+        lblIrudia = new JLabel("");
+        lblIrudia.setBounds(0, 0, 350, 360); // Irudiaren tamaina eta posizioa
+        try {
+            // Irudia kargatu (ziurtatu 'birtek1.jpeg' src karpetan dagoela)
+            ImageIcon originalIcon = new ImageIcon(LoginFrame.class.getResource("src/birtek1.jpeg"));
+            
+            // Irudia eskalatu leihoaren zatira egokitzeko
+            Image img = originalIcon.getImage();
+            Image newImg = img.getScaledInstance(350, 360, Image.SCALE_SMOOTH);
+            lblIrudia.setIcon(new ImageIcon(newImg));
+        } catch (Exception e) {
+            // Irudia ez bada aurkitzen, mezu bat erakutsi
+            lblIrudia.setText("Irudia ez da aurkitu / No image found");
+            lblIrudia.setHorizontalAlignment(SwingConstants.CENTER);
+            lblIrudia.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        }
+        contentPane.add(lblIrudia);
+
+        // --- LOGIN FORMULARIOA (ESKUINALDEAN) ---
+        int desplazamendua = 360; // Elementuak eskuinera mugitzeko X koordenatua
+
+        // Hizkuntza hautatzailea
         String[] langs = {"Euskera", "Castellano", "English"};
         comboLang = new JComboBox<>(langs);
-        comboLang.setBounds(300, 10, 120, 25);
-        // Ezarri defektuzko balioa
-        if(Hizkuntza.selectedLang.equals("ES")) comboLang.setSelectedIndex(1);
-        else if(Hizkuntza.selectedLang.equals("EN")) comboLang.setSelectedIndex(2);
+        comboLang.setBounds(desplazamendua + 220, 10, 120, 25);
+        
+        if("ES".equals(Hizkuntza.selectedLang)) comboLang.setSelectedIndex(1);
+        else if("EN".equals(Hizkuntza.selectedLang)) comboLang.setSelectedIndex(2);
         else comboLang.setSelectedIndex(0);
 
         comboLang.addActionListener(e -> aldatuHizkuntza());
-        edukiPanela.add(comboLang);
+        contentPane.add(comboLang);
 
-        lblTitulo = new JLabel(Hizkuntza.get("app_title"));
+        // Titulua
+        lblTitulo = new JLabel();
         lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 18));
-        lblTitulo.setBounds(50, 20, 250, 30);
-        edukiPanela.add(lblTitulo);
+        lblTitulo.setBounds(desplazamendua + 50, 50, 250, 30);
+        contentPane.add(lblTitulo);
 
-        lblEmail = new JLabel(Hizkuntza.get("email"));
-        lblEmail.setBounds(50, 80, 100, 14);
-        edukiPanela.add(lblEmail);
+        // Emaila
+        lblEmail = new JLabel();
+        lblEmail.setBounds(desplazamendua + 50, 110, 100, 14);
+        contentPane.add(lblEmail);
 
         textEmail = new JTextField();
-        textEmail.setBounds(150, 77, 200, 20);
-        edukiPanela.add(textEmail);
+        textEmail.setBounds(desplazamendua + 150, 107, 200, 20);
+        contentPane.add(textEmail);
         textEmail.setColumns(10);
 
-        lblPass = new JLabel(Hizkuntza.get("pass"));
-        lblPass.setBounds(50, 120, 100, 14);
-        edukiPanela.add(lblPass);
+        // Pasahitza
+        lblPass = new JLabel();
+        lblPass.setBounds(desplazamendua + 50, 150, 100, 14);
+        contentPane.add(lblPass);
 
         passwordField = new JPasswordField();
-        passwordField.setBounds(150, 117, 200, 20);
-        edukiPanela.add(passwordField);
+        passwordField.setBounds(desplazamendua + 150, 147, 200, 20);
+        contentPane.add(passwordField);
 
-        btnSartu = new JButton(Hizkuntza.get("login_btn"));
-        btnSartu.setBackground(new Color(0, 128, 128));
+        // Sartu Botoia
+        btnSartu = new JButton();
+        btnSartu.setBackground(new Color(0, 128, 128)); // Birtek kolore korporatiboa (Teal)
         btnSartu.setForeground(Color.WHITE);
         btnSartu.addActionListener(e -> loguearse());
-        btnSartu.setBounds(150, 170, 100, 30);
-        edukiPanela.add(btnSartu);
+        btnSartu.setBounds(desplazamendua + 150, 200, 100, 30);
+        contentPane.add(btnSartu);
+        
+        // Testuak hasieratu
+        actualizarTextos();
     }
 
     private void aldatuHizkuntza() {
@@ -89,8 +121,11 @@ public class LoginFrame extends JFrame {
         else if ("English".equals(seleccion)) Hizkuntza.selectedLang = "EN";
         else Hizkuntza.selectedLang = "EU";
 
-        // Eguneratu testuak momentuan
-        setTitle(Hizkuntza.get("app_title"));
+        actualizarTextos();
+    }
+    
+    private void actualizarTextos() {
+        setTitle(Hizkuntza.get("login_title"));
         lblTitulo.setText(Hizkuntza.get("app_title"));
         lblEmail.setText(Hizkuntza.get("email"));
         lblPass.setText(Hizkuntza.get("pass"));
@@ -100,13 +135,7 @@ public class LoginFrame extends JFrame {
     private void loguearse() {
         String email = textEmail.getText();
         String pass = new String(passwordField.getPassword());
-        // String query = "SELECT id_langilea, izena, saila_id FROM langileak WHERE emaila = ? AND pasahitza = ?"; 
-        // Deskomentatu goikoa DB konexioarekin probatzeko. Orain simulazioa egingo dugu:
         
-        // SIMULACION PARA PROBAR SIN DB SI ES NECESARIO (Kendu hau DB baduzu)
-        // abrirMenuDepartamento(1); return; 
-
-        // SQL BENETAKOA:
         String query = "SELECT id_langilea, izena, saila_id FROM langileak WHERE emaila = ? AND pasahitza = ?";
         try (Connection con = DBConnection.conectar();
              PreparedStatement pst = con.prepareStatement(query)) {
@@ -123,6 +152,7 @@ public class LoginFrame extends JFrame {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Errorea konexioan / Error de conexión");
         }
     }
 
@@ -133,7 +163,7 @@ public class LoginFrame extends JFrame {
             case 3: new MenuSalmentak().setVisible(true); break;
             case 4: new MenuLogistika().setVisible(true); break;
             case 5: new MenuSistemak().setVisible(true); break;
-            default: JOptionPane.showMessageDialog(null, "Saila ezezaguna");
+            default: JOptionPane.showMessageDialog(null, "ID Ezezaguna / Desconocido");
         }
     }
 }
