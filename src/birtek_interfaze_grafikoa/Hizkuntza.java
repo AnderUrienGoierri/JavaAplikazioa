@@ -5,7 +5,7 @@ import java.util.Map;
 public class Hizkuntza {
     
     // Uneko hizkuntza (Defektuz: Euskera)
-    public static String selectedLang = "EU"; 
+    public static String hizkuntzaAukeratua = "EU"; 
 
     private static final Map<String, String[]> dictionary = new HashMap<>();
 
@@ -63,7 +63,7 @@ public class Hizkuntza {
         String[] values = dictionary.get(key);
         if (values == null) return "MISSING: " + key;
         
-        switch (selectedLang) {
+        switch (hizkuntzaAukeratua) {
             case "ES": return values[1];
             case "EN": return values[2];
             default: return values[0]; // EU
