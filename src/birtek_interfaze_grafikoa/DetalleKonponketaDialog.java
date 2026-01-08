@@ -55,8 +55,8 @@ public class DetalleKonponketaDialog extends JDialog {
 
     private void cargarDatosActuales() {
         String sql = "SELECT konponketa_egoera, oharrak FROM konponketak WHERE id_konponketa = ?";
-        try (Connection con = DBConnection.conectar();
-             PreparedStatement pst = con.prepareStatement(sql)) {
+        try (Connection konexioa = DB_konexioa.konektatu();
+             PreparedStatement pst = konexioa.prepareStatement(sql)) {
             pst.setInt(1, idKonponketa);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
@@ -68,7 +68,7 @@ public class DetalleKonponketaDialog extends JDialog {
 
     private void guardarCambios() {
         String sql = "UPDATE konponketak SET konponketa_egoera = ?, oharrak = ? WHERE id_konponketa = ?";
-        try (Connection con = DBConnection.conectar();
+        try (Connection con = DB_konexioa.konektatu();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, (String) comboEstado.getSelectedItem());
             pst.setString(2, textOharrak.getText());

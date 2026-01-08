@@ -6,17 +6,17 @@ import javax.swing.border.EmptyBorder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement; // Statement gehitu da kargatzeko
+import java.sql.Statement;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 
-public class LoginFrame extends JFrame {
+public class LoginPanela extends JFrame {
 
     private JPanel edukiPanela;
     
-    // ALDAKETA: JTextField izatetik JComboBox izatera pasatu da
+    // JComboBox erabiltzen dugu emailak aukeratzeko
     private JComboBox<String> emailEremua; 
     
     private JPasswordField pasahitzEremua;
@@ -27,12 +27,12 @@ public class LoginFrame extends JFrame {
     private JLabel emailLabela;
     private JLabel pasahitzLabela;
     private JLabel lblIrudia;
-    private JButton btnSartu;
+    private JButton sartuBotoia;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                LoginFrame frame = new LoginFrame();
+                LoginPanela frame = new LoginPanela();
                 frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -40,10 +40,12 @@ public class LoginFrame extends JFrame {
         });
     }
 
-    public LoginFrame() {
+    public LoginPanela() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // Leiho zabalagoa irudia sartzeko (750x400)
-        setBounds(100, 100, 750, 400);
+        
+        // ALDAKETA 1: Leihoa zabalagoa egin dugu (750 -> 900) elementuak ondo sartzeko
+        setBounds(100, 100, 900, 400);
+        
         edukiPanela = new JPanel();
         edukiPanela.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(edukiPanela);
@@ -55,7 +57,7 @@ public class LoginFrame extends JFrame {
         try {
             ImageIcon originalIcon = null;
             // 1. Saiakera: Classpath bidez
-            java.net.URL imgURL = LoginFrame.class.getResource("/birtek1.jpeg");
+            java.net.URL imgURL = LoginPanela.class.getResource("/birtek1.jpeg");
             
             if (imgURL != null) {
                 originalIcon = new ImageIcon(imgURL);
@@ -88,10 +90,11 @@ public class LoginFrame extends JFrame {
         // Hizkuntza hautatzailea
         String[] langs = {"Euskera", "Castellano", "English"};
         hizkuntzaKaxa = new JComboBox<>(langs);
-        hizkuntzaKaxa.setBounds(desplazamendua + 220, 10, 120, 25);
+        // Hizkuntza kaxa pixka bat eskuinerago mugitu dugu leihoa zabaldu dugulako
+        hizkuntzaKaxa.setBounds(desplazamendua + 350, 10, 120, 25);
         
-        if("ES".equals(Hizkuntza.selectedLang)) hizkuntzaKaxa.setSelectedIndex(1);
-        else if("EN".equals(Hizkuntza.selectedLang)) hizkuntzaKaxa.setSelectedIndex(2);
+        if("ES".equals(Hizkuntza.hizkuntzaAukeratua)) hizkuntzaKaxa.setSelectedIndex(1);
+        else if("EN".equals(Hizkuntza.hizkuntzaAukeratua)) hizkuntzaKaxa.setSelectedIndex(2);
         else hizkuntzaKaxa.setSelectedIndex(0);
 
         hizkuntzaKaxa.addActionListener(e -> aldatuHizkuntza());
@@ -100,7 +103,7 @@ public class LoginFrame extends JFrame {
         // Titulua
         tituluLabela = new JLabel();
         tituluLabela.setFont(new Font("Tahoma", Font.BOLD, 18));
-        tituluLabela.setBounds(desplazamendua + 50, 50, 250, 30);
+        tituluLabela.setBounds(desplazamendua + 50, 50, 300, 30);
         edukiPanela.add(tituluLabela);
 
         // Emaila
@@ -108,45 +111,48 @@ public class LoginFrame extends JFrame {
         emailLabela.setBounds(desplazamendua + 50, 110, 100, 14);
         edukiPanela.add(emailLabela);
 
-        // ALDAKETA: JComboBox sortu JTextField-en ordez
+        // ALDAKETA 2: Email eremua askoz zabalagoa (200 -> 300)
         emailEremua = new JComboBox<>();
-        emailEremua.setBounds(desplazamendua + 150, 107, 200, 25); // Altuera pixka bat igo (20 -> 25) hobeto ikusteko
-        emailEremua.setEditable(false); // Soilik zerrendatik aukeratu
+        emailEremua.setBounds(desplazamendua + 150, 107, 300, 25); 
+        emailEremua.setEditable(false); 
         edukiPanela.add(emailEremua);
         
         // Datuak kargatu ComboBox-ean
-        kargatuEmailak();
+        if (!java.beans.Beans.isDesignTime()) {
+             kargatuEmailak();
+        }
 
         // Pasahitza
         pasahitzLabela = new JLabel();
         pasahitzLabela.setBounds(desplazamendua + 50, 150, 100, 14);
         edukiPanela.add(pasahitzLabela);
 
+        // ALDAKETA 3: Pasahitz eremua ere zabalagoa simetria mantentzeko (200 -> 300)
         pasahitzEremua = new JPasswordField();
-        pasahitzEremua.setBounds(desplazamendua + 150, 147, 200, 20);
+        pasahitzEremua.setBounds(desplazamendua + 150, 147, 300, 25); // Altuera ere 25 jarri dut emailaren berdina izateko
         edukiPanela.add(pasahitzEremua);
 
         // Sartu Botoia
-        btnSartu = new JButton();
-        btnSartu.setBackground(new Color(0, 128, 128));
-        btnSartu.setForeground(Color.WHITE);
-        btnSartu.addActionListener(e -> loguearse());
-        btnSartu.setBounds(desplazamendua + 150, 200, 100, 30);
-        edukiPanela.add(btnSartu);
+        sartuBotoia = new JButton();
+        sartuBotoia.setBackground(new Color(0, 128, 128));
+        sartuBotoia.setForeground(new Color(0, 0, 0));
+        sartuBotoia.addActionListener(e -> saioaHasi());
+        sartuBotoia.setBounds(desplazamendua + 150, 200, 120, 30); // Botoia ere pixka bat zabalago
+        edukiPanela.add(sartuBotoia);
         
         // Testuak hasieratu
-        actualizarTextos();
+        eguneratuTextuak();
     }
 
-    // ALDAKETA: Metodo berria emailak eta sailak kargatzeko
+    // METODOA emailak eta sailak kargatzeko
     private void kargatuEmailak() {
-        String query = "SELECT l.emaila, s.izena AS saila_izena " +
-                       "FROM langileak l " +
-                       "JOIN langile_sailak s ON l.saila_id = s.id_saila " +
-                       "ORDER BY l.emaila ASC";
+	        String query = "SELECT l.emaila, s.izena AS saila_izena " +
+	                       "FROM langileak l " +
+	                       "JOIN langile_sailak s ON l.saila_id = s.id_saila " +
+	                       "ORDER BY l.emaila ASC";
 
-        try (Connection con = DBConnection.conectar();
-             Statement stmt = con.createStatement();
+        try (Connection konexioa = DB_konexioa.konektatu();
+             Statement stmt = konexioa.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
             emailEremua.removeAllItems();
@@ -160,30 +166,28 @@ public class LoginFrame extends JFrame {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            // Errorea badago, agian testu soil bat gehitu edo hutsik utzi
             emailEremua.addItem("Errorea datuak kargatzean");
         }
     }
 
     private void aldatuHizkuntza() {
         String seleccion = (String) hizkuntzaKaxa.getSelectedItem();
-        if ("Castellano".equals(seleccion)) Hizkuntza.selectedLang = "ES";
-        else if ("English".equals(seleccion)) Hizkuntza.selectedLang = "EN";
-        else Hizkuntza.selectedLang = "EU";
+        if ("Castellano".equals(seleccion)) Hizkuntza.hizkuntzaAukeratua = "ES";
+        else if ("English".equals(seleccion)) Hizkuntza.hizkuntzaAukeratua = "EN";
+        else Hizkuntza.hizkuntzaAukeratua = "EU";
 
-        actualizarTextos();
+        eguneratuTextuak();
     }
     
-    private void actualizarTextos() {
+    private void eguneratuTextuak() {
         setTitle(Hizkuntza.get("login_title"));
         tituluLabela.setText(Hizkuntza.get("app_title"));
         emailLabela.setText(Hizkuntza.get("email"));
         pasahitzLabela.setText(Hizkuntza.get("pass"));
-        btnSartu.setText(Hizkuntza.get("login_btn"));
+        sartuBotoia.setText(Hizkuntza.get("login_btn"));
     }
 
-    private void loguearse() {
-        // ALDAKETA: ComboBox-etik datua hartu eta garbitu
+    private void saioaHasi() {
         String aukeratutakoa = (String) emailEremua.getSelectedItem();
         
         if (aukeratutakoa == null || aukeratutakoa.trim().isEmpty()) {
@@ -192,21 +196,20 @@ public class LoginFrame extends JFrame {
         }
 
         // "emaila (Saila)" formatutik emaila bakarrik atera
-        // Adibidez: "ander@birtek.eus (Zuzendaritza)" -> "ander@birtek.eus"
         String email = aukeratutakoa.split(" \\(")[0];
         
         String pass = new String(pasahitzEremua.getPassword());
         
         String query = "SELECT id_langilea, izena, saila_id FROM langileak WHERE emaila = ? AND pasahitza = ?";
-        try (Connection con = DBConnection.conectar();
-             PreparedStatement pst = con.prepareStatement(query)) {
+        try (Connection konexioa = DB_konexioa.konektatu();
+             PreparedStatement pst = konexioa.prepareStatement(query)) {
             pst.setString(1, email);
             pst.setString(2, pass);
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
                 int sailaId = rs.getInt("saila_id");
-                abrirMenuDepartamento(sailaId);
+                irekiSailMenua(sailaId);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Login Error: Pasahitza okerra / Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
@@ -217,7 +220,7 @@ public class LoginFrame extends JFrame {
         }
     }
 
-    private void abrirMenuDepartamento(int sailaId) {
+    private void irekiSailMenua(int sailaId) {
         switch (sailaId) {
             case 1: new MenuZuzendaritza().setVisible(true); break;
             case 2: new MenuAdministrazioa().setVisible(true); break;
