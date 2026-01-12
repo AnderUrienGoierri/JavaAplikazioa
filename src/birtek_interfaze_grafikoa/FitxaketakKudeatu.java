@@ -13,6 +13,23 @@ public class FitxaketakKudeatu extends JFrame {
 	private JTable taula;
 	private DefaultTableModel eredua;
 
+	private class Langilea {
+		int id;
+		String izena;
+		String abizena;
+
+		public Langilea(int id, String izena, String abizena) {
+			this.id = id;
+			this.izena = izena;
+			this.abizena = abizena;
+		}
+
+		@Override
+		public String toString() {
+			return id + " - " + izena + " " + abizena;
+		}
+	}
+
 	/**
 	 * Applikazioa abiarazi.
 	 */
@@ -99,23 +116,51 @@ public class FitxaketakKudeatu extends JFrame {
 		}
 	}
 
+	private DefaultComboBoxModel<Langilea> langileakLortu() {
+		DefaultComboBoxModel<Langilea> eredua = new DefaultComboBoxModel<>();
+		String galdera = "SELECT id_langilea, izena, abizena FROM langileak ORDER BY id_langilea";
+		try (Connection konexioa = DB_Konexioa.konektatu();
+			 PreparedStatement sententziaPrestatua = konexioa.prepareStatement(galdera);
+			 ResultSet emaitza = sententziaPrestatua.executeQuery()) {
+			while (emaitza.next()) {
+				eredua.addElement(new Langilea(
+					emaitza.getInt("id_langilea"),
+					emaitza.getString("izena"),
+					emaitza.getString("abizena")
+				));
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Errorea langileak kargatzean: " + e.getMessage());
+		}
+		return eredua;
+	}
+
 	private void fitxaketaBerria() {
-		JTextField langileaIdTestua = new JTextField();
+		JComboBox<Langilea> langileaHautatzailea = new JComboBox<>(langileakLortu());
 		String[] aukerak = {"Sarrera", "Irteera"};
 		JComboBox<String> motaHautatzailea = new JComboBox<>(aukerak);
+		
+		java.time.LocalDateTime orain = java.time.LocalDateTime.now();
+		JTextField dataTestua = new JTextField(orain.toLocalDate().toString());
+		JTextField orduaTestua = new JTextField(orain.toLocalTime().withNano(0).toString());
 
 		Object[] mezua = {
-			"Langile ID:", langileaIdTestua,
-			"Mota:", motaHautatzailea
+			"Langilea:", langileaHautatzailea,
+			"Mota:", motaHautatzailea,
+			"Data (YYYY-MM-DD):", dataTestua,
+			"Ordua (HH:MM:SS):", orduaTestua
 		};
 
 		int aukera = JOptionPane.showConfirmDialog(null, mezua, "Fitxaketa Berria", JOptionPane.OK_CANCEL_OPTION);
-		if (aukera == JOptionPane.OK_OPTION) {
+		if (aukera == JOptionPane.OK_OPTION && langileaHautatzailea.getSelectedItem() != null) {
 			try (Connection konexioa = DB_Konexioa.konektatu()) {
-				String galdera = "INSERT INTO fitxaketak (langilea_id, mota) VALUES (?, ?)";
+				String galdera = "INSERT INTO fitxaketak (langilea_id, mota, data, ordua) VALUES (?, ?, ?, ?)";
 				PreparedStatement sententziaPrestatua = konexioa.prepareStatement(galdera);
-				sententziaPrestatua.setInt(1, Integer.parseInt(langileaIdTestua.getText()));
+				Langilea hautatua = (Langilea) langileaHautatzailea.getSelectedItem();
+				sententziaPrestatua.setInt(1, hautatua.id);
 				sententziaPrestatua.setString(2, (String) motaHautatzailea.getSelectedItem());
+				sententziaPrestatua.setString(3, dataTestua.getText());
+				sententziaPrestatua.setString(4, orduaTestua.getText());
 				
 				if (sententziaPrestatua.executeUpdate() > 0) {
 					// JOptionPane.showMessageDialog(this, "Fitxaketa ongi gehitu da.");
@@ -135,27 +180,45 @@ public class FitxaketakKudeatu extends JFrame {
 		}
 
 		int id = Integer.parseInt(taula.getValueAt(errenkada, 0).toString()); 
-		String langileaIdKatea = taula.getValueAt(errenkada, 1).toString();
-		String motaHautatua = taula.getValueAt(errenkada, 2).toString();
+		int langileaIdHeldua = Integer.parseInt(taula.getValueAt(errenkada, 1).toString());
+		String dataHeldua = taula.getValueAt(errenkada, 2).toString();
+		String orduaHeldua = taula.getValueAt(errenkada, 3).toString();
+		String motaHautatua = taula.getValueAt(errenkada, 4).toString();
 
-		JTextField langileaIdTestua = new JTextField(langileaIdKatea);
+		JComboBox<Langilea> langileaHautatzailea = new JComboBox<>(langileakLortu());
+		// Hautatutako langilea ComboBox-ean bilatu
+		for (int i = 0; i < langileaHautatzailea.getItemCount(); i++) {
+			if (langileaHautatzailea.getItemAt(i).id == langileaIdHeldua) {
+				langileaHautatzailea.setSelectedIndex(i);
+				break;
+			}
+		}
+
 		String[] aukerak = {"Sarrera", "Irteera"};
 		JComboBox<String> motaHautatzailea = new JComboBox<>(aukerak);
 		motaHautatzailea.setSelectedItem(motaHautatua);
+		
+		JTextField dataTestua = new JTextField(dataHeldua);
+		JTextField orduaTestua = new JTextField(orduaHeldua);
 
 		Object[] mezua = {
-			"Langile ID:", langileaIdTestua,
-			"Mota:", motaHautatzailea
+			"Langilea:", langileaHautatzailea,
+			"Mota:", motaHautatzailea,
+			"Data (YYYY-MM-DD):", dataTestua,
+			"Ordua (HH:MM:SS):", orduaTestua
 		};
 
 		int aukera = JOptionPane.showConfirmDialog(null, mezua, "Aldatu Fitxaketa", JOptionPane.OK_CANCEL_OPTION);
-		if (aukera == JOptionPane.OK_OPTION) {
+		if (aukera == JOptionPane.OK_OPTION && langileaHautatzailea.getSelectedItem() != null) {
 			try (Connection konexioa = DB_Konexioa.konektatu()) {
-				String galdera = "UPDATE fitxaketak SET langilea_id = ?, mota = ? WHERE id_fitxaketa = ?";
+				String galdera = "UPDATE fitxaketak SET langilea_id = ?, mota = ?, data = ?, ordua = ? WHERE id_fitxaketa = ?";
 				PreparedStatement sententziaPrestatua = konexioa.prepareStatement(galdera);
-				sententziaPrestatua.setInt(1, Integer.parseInt(langileaIdTestua.getText()));
+				Langilea hautatua = (Langilea) langileaHautatzailea.getSelectedItem();
+				sententziaPrestatua.setInt(1, hautatua.id);
 				sententziaPrestatua.setString(2, (String) motaHautatzailea.getSelectedItem());
-				sententziaPrestatua.setInt(3, id);
+				sententziaPrestatua.setString(3, dataTestua.getText());
+				sententziaPrestatua.setString(4, orduaTestua.getText());
+				sententziaPrestatua.setInt(5, id);
 				
 				if (sententziaPrestatua.executeUpdate() > 0) {
 					// JOptionPane.showMessageDialog(this, "Fitxaketa ongi eguneratu da.");
