@@ -178,11 +178,11 @@ public class SaioaHastekoPanela extends JFrame {
     }
     
     private void eguneratuTestuak() {
-        setTitle(Hizkuntza.lortu("login_title"));
-        izenburuEtiketa.setText(Hizkuntza.lortu("app_title"));
-        postaEtiketa.setText(Hizkuntza.lortu("email"));
-        pasahitzaEtiketa.setText(Hizkuntza.lortu("pass"));
-        saioaHasiBotoia.setText(Hizkuntza.lortu("login_btn"));
+        setTitle(Hizkuntza.get("login_title"));
+        izenburuEtiketa.setText(Hizkuntza.get("app_title"));
+        postaEtiketa.setText(Hizkuntza.get("email"));
+        pasahitzaEtiketa.setText(Hizkuntza.get("pass"));
+        saioaHasiBotoia.setText(Hizkuntza.get("login_btn"));
     }
 
     private void saioaHasi() {

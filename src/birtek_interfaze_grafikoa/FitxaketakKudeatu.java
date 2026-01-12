@@ -50,7 +50,7 @@ public class FitxaketakKudeatu extends JFrame {
 	 * Leioa sortu.
 	 */
 	public FitxaketakKudeatu() {
-		setTitle("Birtek - Fitxaketak Kudeatu");
+		setTitle("Birtek - Langileen Fitxaketak Kudeatu");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 500);
 		edukiPanela = new JPanel();
