@@ -1,5 +1,4 @@
 package birtek_interfaze_grafikoa;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
