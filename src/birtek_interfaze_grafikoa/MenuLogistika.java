@@ -11,90 +11,80 @@ import java.io.File;
 
 public class MenuLogistika extends JFrame {
 
+    private static final long serialVersionUID = 1L;
     private JPanel edukiPanela;
-    private JTextField txtBilatu;
+    private JTextField bilatuTestua;
     
     // Erabiltzailearen datuak (Saioa hasita duena)
-    private int unekoLangileaId;
-    private String unekoLangileaIzena;
-    private String unekoLangileaAbizena;
-    private String unekoLangileaSaila;
+    private int erabiltzaileId;
+    private String erabiltzaileIzena;
+    private String erabiltzaileAbizena;
+    private String erabiltzaileSaila;
     
     // Fitxaketa informazioa erakusteko etiketa
-    private JLabel lblFitxaketaInfo;
+    private JLabel fitxaketaInfoEtiketa;
     
     // Taulak
-    private JTable tableSarrerak;
-    private JTable tableBiltegiak;
-    private JTable tableProduktuak;
+    private JTable sarreraTaula;
+    private JTable biltegiTaula;
+    private JTable produktuTaula;
     
     // Sarrera Berria elementuak
-    private JComboBox<HornitzaileItem> comboHornitzaileak;
-    private JCheckBox chkHornitzaileBerria;
-    private JTextField txtNewHornIzena;
-    private JTextField txtNewHornEmail;
-    private JTextField txtNewHornIFZ;
+    private JComboBox<HornitzaileElementua> hornitzaileHautatzailea;
+    private JCheckBox hornitzaileBerriaAukera;
+    private JTextField izenaBerriaTestua;
+    private JTextField postaBerriaTestua;
+    private JTextField ifzBerriaTestua;
     
-    private JTextField txtProduktuIzena;
-    private JTextField txtMarka;
-    private JComboBox<KategoriaItem> comboKategoriak;
-    private JComboBox<String> comboMotak;
-    private JComboBox<BiltegiItem> comboBiltegiakSarrera;
-    private JTextField txtKantitatea;
+    private JTextField produktuIzenaTestua;
+    private JTextField markaTestua;
+    private JComboBox<KategoriaElementua> kategoriaHautatzailea;
+    private JComboBox<String> motaHautatzailea;
+    private JComboBox<BiltegiElementua> biltegiHautatzaileaSarrera;
+    private JTextField kantitateTestua;
     
-    private JTable tableLerroakBerriak;
-    private DefaultTableModel modelLerroakBerriak;
+    private JTable lerroBerriTaula;
+    private DefaultTableModel lerroBerriEredua;
     
     // Iragazkia
-    private JComboBox<String> comboFilterEgoera;
+    private JComboBox<String> egoeraIragazkia;
 
     // Fitxak
-    private JTabbedPane tabbedPane;
+    private JTabbedPane pestainaPanela;
     
     // Sorters
-    private TableRowSorter<DefaultTableModel> sorterSarrerak;
-    private TableRowSorter<DefaultTableModel> sorterBiltegiak;
-    private TableRowSorter<DefaultTableModel> sorterProduktuak;
-    // --- MAIN ---
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    MenuLogistika frame = new MenuLogistika();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+    private TableRowSorter<DefaultTableModel> sarreraOrdenatzailea;
+    private TableRowSorter<DefaultTableModel> biltegiOrdenatzailea;
+    private TableRowSorter<DefaultTableModel> produktuOrdenatzailea;
 
-    // --- ERAIKITZAILEAK (CONSTRUCTORS) ---
-
+    /**
+     * Eraikitzaileak eguneratua.
+     */
     public MenuLogistika(int langileaId, String langileaIzena, String langileaAbizena, String langileaSaila) {
-        this.unekoLangileaId = langileaId;
-        this.unekoLangileaIzena = langileaIzena;
-        this.unekoLangileaAbizena = langileaAbizena;
-        this.unekoLangileaSaila = langileaSaila;
-        initUI();
+        this.erabiltzaileId = langileaId;
+        this.erabiltzaileIzena = langileaIzena;
+        this.erabiltzaileAbizena = langileaAbizena;
+        this.erabiltzaileSaila = langileaSaila;
+        pantailaPrestatu();
     }
 
     public MenuLogistika() {
         this(3, "Jon", "Etxebarria", "Logistika");
     }
 
-    private void initUI() {
+    private void pantailaPrestatu() {
         setTitle("Birtek - LOGISTIKA");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 1150, 700); // Pixka bat zabalagoa informazioa sartzeko
+        setBounds(100, 100, 1150, 700); 
         
-        edukiPanela = new BackgroundPanel();
+        edukiPanela = new AtzealdekoPanela();
         edukiPanela.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(edukiPanela);
         edukiPanela.setLayout(new BorderLayout(0, 0));
 
         // --- GOIKO PANELA ---
-        JPanel panelTop = new JPanel(new BorderLayout()) {
+        JPanel goikoPanela = new JPanel(new BorderLayout()) {
+            private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -102,210 +92,152 @@ public class MenuLogistika extends JFrame {
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        panelTop.setOpaque(false); 
-        panelTop.setBorder(BorderFactory.createCompoundBorder(
+        goikoPanela.setOpaque(false); 
+        goikoPanela.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(0, 128, 128), 1),
             BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
         
-        edukiPanela.add(panelTop, BorderLayout.NORTH);
+        edukiPanela.add(goikoPanela, BorderLayout.NORTH);
 
         // EZKERRA: Bilatzailea
-        JPanel panelBuscador = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelBuscador.setOpaque(false); 
-        JLabel lblBilatu = new JLabel("Bilatu: ");
-        lblBilatu.setFont(new Font("SansSerif", Font.BOLD, 12));
-        panelBuscador.add(lblBilatu);
+        JPanel bilatzailePanela = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bilatzailePanela.setOpaque(false); 
+        JLabel bilatuEtiketa = new JLabel("Bilatu: ");
+        bilatuEtiketa.setFont(new Font("SansSerif", Font.BOLD, 12));
+        bilatzailePanela.add(bilatuEtiketa);
         
-        txtBilatu = new JTextField();
-        txtBilatu.setColumns(20);
-        txtBilatu.addKeyListener(new KeyAdapter() {
+        bilatuTestua = new JTextField();
+        bilatuTestua.setColumns(20);
+        bilatuTestua.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e) { filtrar(); }
+            public void keyReleased(KeyEvent e) { filtratu(); }
         });
-        panelBuscador.add(txtBilatu);
-        panelTop.add(panelBuscador, BorderLayout.WEST);
+        bilatzailePanela.add(bilatuTestua);
+        goikoPanela.add(bilatzailePanela, BorderLayout.WEST);
 
         // ESKUINA: Erabiltzailea + Fitxaketa + Logout
-        // GridBagLayout erabiltzen dugu elementuak hobeto kokatzeko
-        JPanel panelUserInfo = new JPanel(new GridBagLayout());
-        panelUserInfo.setOpaque(false);
-        // 1. Erabiltzailearen izena
-        JLabel lblUser = new JLabel(unekoLangileaSaila + " | " + unekoLangileaIzena + " " + unekoLangileaAbizena);
-        lblUser.setFont(new Font("SansSerif", Font.BOLD, 14));
-        lblUser.setForeground(new Color(0, 102, 102));
+        JPanel erabiltzaileInfoPanela = new JPanel(new GridBagLayout());
+        erabiltzaileInfoPanela.setOpaque(false);
+        
+        JLabel erabiltzaileEtiketa = new JLabel(erabiltzaileSaila + " | " + erabiltzaileIzena + " " + erabiltzaileAbizena);
+        erabiltzaileEtiketa.setFont(new Font("SansSerif", Font.BOLD, 14));
+        erabiltzaileEtiketa.setForeground(new Color(0, 102, 102));
         
         GridBagConstraints gbcUser = new GridBagConstraints();
         gbcUser.insets = new Insets(0, 10, 0, 10);
         gbcUser.fill = GridBagConstraints.VERTICAL;
         gbcUser.gridx = 0; gbcUser.gridy = 0;
-        panelUserInfo.add(lblUser, gbcUser);
+        erabiltzaileInfoPanela.add(erabiltzaileEtiketa, gbcUser);
 
-        // 2. Fitxaketa Panela (Botoiak + Info Labela)
-        JPanel panelFitxaketaContainer = new JPanel();
-        panelFitxaketaContainer.setOpaque(false);
-        panelFitxaketaContainer.setLayout(new BoxLayout(panelFitxaketaContainer, BoxLayout.Y_AXIS)); // Bertikala
+        // Fitxaketa Panela
+        JPanel fitxaketaKontainerra = new JPanel();
+        fitxaketaKontainerra.setOpaque(false);
+        fitxaketaKontainerra.setLayout(new BoxLayout(fitxaketaKontainerra, BoxLayout.Y_AXIS)); 
         
-        // Botoiak
-        JPanel panelBtns = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        panelBtns.setOpaque(false);
+        JPanel botoiPanela = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        botoiPanela.setOpaque(false);
         
-        JButton btnSarrera = new JButton("Sarrera");
-        btnSarrera.setBackground(new Color(34, 139, 34)); // Berdea
-        btnSarrera.setForeground(new Color(0, 0, 0));
-        btnSarrera.setFont(new Font("SansSerif", Font.BOLD, 11));
-        btnSarrera.addActionListener(e -> fitxatu("Sarrera"));
+        JButton sarreraBotoia = new JButton("Sarrera");
+        sarreraBotoia.setBackground(new Color(34, 139, 34)); 
+        sarreraBotoia.setForeground(new Color(0, 0, 0));
+        sarreraBotoia.setFont(new Font("SansSerif", Font.BOLD, 11));
+        sarreraBotoia.addActionListener(e -> fitxatu("Sarrera"));
         
-        JButton btnIrteera = new JButton("Irteera");
-        btnIrteera.setBackground(new Color(255, 140, 0)); // Laranja
-        btnIrteera.setForeground(new Color(0, 0, 0));
-        btnIrteera.setFont(new Font("SansSerif", Font.BOLD, 11));
-        btnIrteera.addActionListener(e -> fitxatu("Irteera"));
+        JButton irteeraBotoia = new JButton("Irteera");
+        irteeraBotoia.setBackground(new Color(255, 140, 0)); 
+        irteeraBotoia.setForeground(new Color(0, 0, 0));
+        irteeraBotoia.setFont(new Font("SansSerif", Font.BOLD, 11));
+        irteeraBotoia.addActionListener(e -> fitxatu("Irteera"));
         
-        // --- BOTOI BERRIA: HISTORIALA ---
-        JButton btnHistoriala = new JButton("Historiala");
-        btnHistoriala.setBackground(new Color(100, 149, 237)); // Urdin argia (CornflowerBlue)
-        btnHistoriala.setForeground(new Color(0, 0, 0));
-        btnHistoriala.setFont(new Font("SansSerif", Font.BOLD, 11));
-        btnHistoriala.addActionListener(e -> ikusiFitxaketaHistoriala());
+        JButton historialBotoia = new JButton("Historiala");
+        historialBotoia.setBackground(new Color(100, 149, 237)); 
+        historialBotoia.setForeground(new Color(0, 0, 0));
+        historialBotoia.setFont(new Font("SansSerif", Font.BOLD, 11));
+        historialBotoia.addActionListener(e -> ikusiFitxaketaHistoriala());
         
-        panelBtns.add(btnSarrera);
-        panelBtns.add(btnIrteera);
-        panelBtns.add(btnHistoriala); // Botoia gehitu
+        botoiPanela.add(sarreraBotoia);
+        botoiPanela.add(irteeraBotoia);
+        botoiPanela.add(historialBotoia); 
         
-        // Info Labela
-        lblFitxaketaInfo = new JLabel("Egoera kargatzen...");
-        lblFitxaketaInfo.setFont(new Font("SansSerif", Font.PLAIN, 10));
-        lblFitxaketaInfo.setHorizontalAlignment(SwingConstants.CENTER);
-        lblFitxaketaInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        fitxaketaInfoEtiketa = new JLabel("Egoera kargatzen...");
+        fitxaketaInfoEtiketa.setFont(new Font("SansSerif", Font.PLAIN, 10));
+        fitxaketaInfoEtiketa.setHorizontalAlignment(SwingConstants.CENTER);
+        fitxaketaInfoEtiketa.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        panelFitxaketaContainer.add(panelBtns);
-        panelFitxaketaContainer.add(Box.createVerticalStrut(2)); // Tarte txikia
-        panelFitxaketaContainer.add(lblFitxaketaInfo);
+        fitxaketaKontainerra.add(botoiPanela);
+        fitxaketaKontainerra.add(Box.createVerticalStrut(2)); 
+        fitxaketaKontainerra.add(fitxaketaInfoEtiketa);
         
         GridBagConstraints gbcFitxa = new GridBagConstraints();
         gbcFitxa.insets = new Insets(0, 10, 0, 10);
         gbcFitxa.fill = GridBagConstraints.VERTICAL;
         gbcFitxa.gridx = 1; gbcFitxa.gridy = 0;
-        panelUserInfo.add(panelFitxaketaContainer, gbcFitxa);
+        erabiltzaileInfoPanela.add(fitxaketaKontainerra, gbcFitxa);
 
-        // 3. Logout botoia
-        JButton btnLogout = new JButton("Saioa Itxi");
-        btnLogout.setBackground(new Color(220, 20, 60));
-        btnLogout.setForeground(new Color(0, 0, 0));
-        btnLogout.setFont(new Font("SansSerif", Font.BOLD, 12));
-        btnLogout.addActionListener(e -> cerrarSesion());
+        // Logout botoia
+        JButton saioaItxiBotoia = new JButton("Saioa Itxi");
+        saioaItxiBotoia.setBackground(new Color(220, 20, 60));
+        saioaItxiBotoia.setForeground(new Color(0, 0, 0));
+        saioaItxiBotoia.setFont(new Font("SansSerif", Font.BOLD, 12));
+        saioaItxiBotoia.addActionListener(e -> saioaItxi());
         
         GridBagConstraints gbcLogout = new GridBagConstraints();
         gbcLogout.insets = new Insets(0, 10, 0, 10);
         gbcLogout.fill = GridBagConstraints.VERTICAL;
         gbcLogout.gridx = 2; gbcLogout.gridy = 0;
-        panelUserInfo.add(btnLogout, gbcLogout);
+        erabiltzaileInfoPanela.add(saioaItxiBotoia, gbcLogout);
         
-        panelTop.add(panelUserInfo, BorderLayout.EAST);
+        goikoPanela.add(erabiltzaileInfoPanela, BorderLayout.EAST);
 
         // --- FITXAK ---
         UIManager.put("TabbedPane.contentOpaque", false);
-        tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPane.setOpaque(false);
+        pestainaPanela = new JTabbedPane(JTabbedPane.TOP);
+        pestainaPanela.setOpaque(false);
         
-        edukiPanela.add(tabbedPane, BorderLayout.CENTER);
+        edukiPanela.add(pestainaPanela, BorderLayout.CENTER);
 
         // Tab-ak sortu
-        crearTabSarrerak();
-        crearTabBiltegiak();
-        crearTabProduktuak();
-        crearTabSarreraBerria();
+        sarreraTabSortu();
+        biltegiTabSortu();
+        produktuTabSortu();
+        sarreraBerriaTabSortu();
 
-        tabbedPane.addChangeListener(e -> {
-            txtBilatu.setText(""); 
-            int index = tabbedPane.getSelectedIndex();
-            if (index == 0) cargarDatosSarrerak();
-            else if (index == 1) cargarDatosBiltegiak();
-            else if (index == 2) cargarDatosProduktuak();
-            else if (index == 3) cargarCombosSarrera(); 
+        pestainaPanela.addChangeListener(e -> {
+            bilatuTestua.setText(""); 
+            int index = pestainaPanela.getSelectedIndex();
+            if (index == 0) sarreraDatuakKargatu();
+            else if (index == 1) biltegiDatuakKargatu();
+            else if (index == 2) produktuDatuakKargatu();
+            else if (index == 3) sarreraHautatzaileakKargatu(); 
         });
 
         // Hasierako karga
         if (!java.beans.Beans.isDesignTime()) {
-            cargarDatosSarrerak();
-            cargarDatosBiltegiak();
-            cargarDatosProduktuak();
-            cargarCombosSarrera();
-            
-            // Fitxaketa egoera kargatu hasieran
+            sarreraDatuakKargatu();
+            biltegiDatuakKargatu();
+            produktuDatuakKargatu();
+            sarreraHautatzaileakKargatu();
             eguneratuFitxaketaEgoera();
-        } else {
-            // DUMMY DATUAK WINDOWBUILDER-ENTZAKO
-            
-            // 1. Sarrerak
-            String[] colSarrerak = {"id_sarrera", "Hornitzailea", "data", "sarrera_egoera"};
-            Object[][] dataSarrerak = {
-                {5, "PC Componentes Pro", "2025-12-17T10:03:10", "Bidean"},
-                {4, "PC Componentes Pro", "2025-12-15T16:42:59", "Jasota"},
-                {3, "Amazon Business", "2025-12-08T03:44:45", "Jasota"},
-                {2, "Ingram Micro", "2024-11-15T09:30", "Jasota"},
-                {1, "PC Componentes Pro", "2024-11-01T10:00", "Jasota"}
-            };
-            DefaultTableModel modelSarrerak = new DefaultTableModel(dataSarrerak, colSarrerak);
-            tableSarrerak.setModel(modelSarrerak);
-            
-            // 2. Biltegiak
-            String[] colBiltegiak = {"id_biltegia", "izena", "biltegi_sku"};
-            Object[][] dataBiltegiak = {
-                {1, "Biltegi Nagusia", "BIL-001"},
-                {2, "Biltegi Txikia", "BIL-002"}
-            };
-            DefaultTableModel modelBiltegiak = new DefaultTableModel(dataBiltegiak, colBiltegiak);
-            tableBiltegiak.setModel(modelBiltegiak);
-            
-            // 3. Produktuak
-            String[] colProduktuak = {"id_produktua", "Produktua", "Biltegia", "Sarrera ID", "Egoera", "Sarrera Data", "id_sarrera_lerroa"};
-            Object[][] dataProduktuak = {
-                {101, "Lenovo ThinkPad", "Biltegi Nagusia", 5, "Bidean", "2025-12-17", 10},
-                {102, "Dell XPS 13", "Biltegi Txikia", 4, "Jasota", "2025-12-15", 11}
-            };
-            DefaultTableModel modelProduktuak = new DefaultTableModel(dataProduktuak, colProduktuak);
-            tableProduktuak.setModel(modelProduktuak);
-
-            // 4. Combos
-            comboHornitzaileak.addItem(new HornitzaileItem(1, "PC Componentes Pro"));
-            comboHornitzaileak.addItem(new HornitzaileItem(2, "Amazon Business"));
-            
-            comboKategoriak.addItem(new KategoriaItem(1, "Ordenagailuak"));
-            comboKategoriak.addItem(new KategoriaItem(2, "Monitoreak"));
-            
-            comboBiltegiakSarrera.addItem(new BiltegiItem(1, "Biltegi Nagusia"));
-            comboBiltegiakSarrera.addItem(new BiltegiItem(2, "Biltegi Txikia"));
-            
-            // 5. Fitxaketa Label
-            lblFitxaketaInfo.setText("✅ BARRUAN (Sarrera: 2025-01-07 08:30:00)");
-            lblFitxaketaInfo.setForeground(new Color(0, 100, 0));
         }
     }
 
     // --- FITXAKETA KUDEAKETA ---
-
     private void fitxatu(String mota) {
-        String sqlCheck = "SELECT mota FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
-        
-        try (Connection con = DB_konexioa.konektatu()) {
-            
-            // 1. Egiaztatu
-            try (PreparedStatement pstCheck = con.prepareStatement(sqlCheck)) {
-                pstCheck.setInt(1, this.unekoLangileaId);
-                try (ResultSet rs = pstCheck.executeQuery()) {
+        String galdera = "SELECT mota FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
+        try (Connection konexioa = DB_Konexioa.konektatu()) {
+            try (PreparedStatement sententzia = konexioa.prepareStatement(galdera)) {
+                sententzia.setInt(1, this.erabiltzaileId);
+                try (ResultSet rs = sententzia.executeQuery()) {
                     String azkenMota = null;
-                    if (rs.next()) {
-                        azkenMota = rs.getString("mota");
-                    }
+                    if (rs.next()) azkenMota = rs.getString("mota");
                     
                     if ("Sarrera".equals(mota) && "Sarrera".equals(azkenMota)) {
-                        JOptionPane.showMessageDialog(this, "Jada barruan zaude (Sarrera fitxatuta).", "Errorea", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Jada barruan zaude.", "Errorea", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
                     if ("Irteera".equals(mota) && "Irteera".equals(azkenMota)) {
-                        JOptionPane.showMessageDialog(this, "Jada kanpoan zaude (Irteera fitxatuta).", "Errorea", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Jada kanpoan zaude.", "Errorea", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
                     if ("Irteera".equals(mota) && azkenMota == null) {
@@ -314,207 +246,162 @@ public class MenuLogistika extends JFrame {
                     }
                 }
             }
-
-            // 2. Txertatu
-            String sqlInsert = "INSERT INTO fitxaketak (langilea_id, mota) VALUES (?, ?)";
-            try (PreparedStatement pstInsert = con.prepareStatement(sqlInsert)) {
-                pstInsert.setInt(1, this.unekoLangileaId);
+            String sartuGaldera = "INSERT INTO fitxaketak (langilea_id, mota) VALUES (?, ?)";
+            try (PreparedStatement pstInsert = konexioa.prepareStatement(sartuGaldera)) {
+                pstInsert.setInt(1, this.erabiltzaileId);
                 pstInsert.setString(2, mota);
-                
-                int rows = pstInsert.executeUpdate();
-                if (rows > 0) {
+                if (pstInsert.executeUpdate() > 0) {
                     JOptionPane.showMessageDialog(this, mota + " erregistratuta.", "Ongi", JOptionPane.INFORMATION_MESSAGE);
-                    // Eguneratu label-a berehala
                     eguneratuFitxaketaEgoera();
                 }
             }
-            
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Errorea: " + e.getMessage());
         }
     }
 
-    // EGOERA EGUNERATZEKO
     private void eguneratuFitxaketaEgoera() {
-        String sql = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
-        
-        try (Connection con = DB_konexioa.konektatu();
-             PreparedStatement pst = con.prepareStatement(sql)) {
-            
-            pst.setInt(1, this.unekoLangileaId);
-            ResultSet rs = pst.executeQuery();
-            
+        String galdera = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
+        try (Connection konexioa = DB_Konexioa.konektatu();
+             PreparedStatement sententzia = konexioa.prepareStatement(galdera)) {
+            sententzia.setInt(1, this.erabiltzaileId);
+            ResultSet rs = sententzia.executeQuery();
             if (rs.next()) {
                 String mota = rs.getString("mota");
                 Date data = rs.getDate("data");
                 Time ordua = rs.getTime("ordua");
-                
-                String testua = "";
                 if ("Sarrera".equals(mota)) {
-                    testua = "✅ BARRUAN (Sarrera: " + data + " " + ordua + ")";
-                    lblFitxaketaInfo.setForeground(new Color(0, 100, 0)); // Berde iluna
+                    fitxaketaInfoEtiketa.setText("✅ BARRUAN (Sarrera: " + data + " " + ordua + ")");
+                    fitxaketaInfoEtiketa.setForeground(new Color(0, 100, 0));
                 } else {
-                    testua = "❌ KANPOAN (Irteera: " + data + " " + ordua + ")";
-                    lblFitxaketaInfo.setForeground(new Color(200, 0, 0)); // Gorria
+                    fitxaketaInfoEtiketa.setText("❌ KANPOAN (Irteera: " + data + " " + ordua + ")");
+                    fitxaketaInfoEtiketa.setForeground(new Color(200, 0, 0));
                 }
-                lblFitxaketaInfo.setText(testua);
             } else {
-                lblFitxaketaInfo.setText("⚪ Ez dago erregistrorik.");
-                lblFitxaketaInfo.setForeground(Color.GRAY);
+                fitxaketaInfoEtiketa.setText("⚪ Ez dago erregistrorik.");
+                fitxaketaInfoEtiketa.setForeground(Color.GRAY);
             }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-            lblFitxaketaInfo.setText("Errorea datuak irakurtzean");
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    // --- METODO BERRIA: HISTORIALA IKUSTEKO ---
     private void ikusiFitxaketaHistoriala() {
-        JDialog dialog = new JDialog(this, "Nire Fitxaketa Historiala", true);
-        dialog.setSize(500, 400);
-        dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new BorderLayout());
-
-        // Taula sortu
+        JDialog elkarrizketa = new JDialog(this, "Nire Fitxaketa Historiala", true);
+        elkarrizketa.setSize(500, 400);
+        elkarrizketa.setLocationRelativeTo(this);
+        elkarrizketa.setLayout(new BorderLayout());
         String[] zutabeak = {"Mota", "Data", "Ordua"};
-        DefaultTableModel model = new DefaultTableModel(zutabeak, 0);
-        JTable table = new JTable(model);
-        
-        // Estilo pixka bat
-        table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
-        table.setRowHeight(25);
-        
-        JScrollPane scroll = new JScrollPane(table);
-        dialog.add(scroll, BorderLayout.CENTER);
+        DefaultTableModel eredua = new DefaultTableModel(zutabeak, 0);
+        JTable taula = new JTable(eredua);
+        taula.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
+        taula.setRowHeight(25);
+        elkarrizketa.add(new JScrollPane(taula), BorderLayout.CENTER);
 
-        // Datuak kargatu
-        String sql = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC";
-        
-        try (Connection con = DB_konexioa.konektatu();
-             PreparedStatement pst = con.prepareStatement(sql)) {
-            
-            pst.setInt(1, this.unekoLangileaId);
-            ResultSet rs = pst.executeQuery();
-            
+        String galdera = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC";
+        try (Connection konexioa = DB_Konexioa.konektatu(); PreparedStatement sententzia = konexioa.prepareStatement(galdera)) {
+            sententzia.setInt(1, this.erabiltzaileId);
+            ResultSet rs = sententzia.executeQuery();
             while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getString("mota"),
-                    rs.getDate("data"),
-                    rs.getTime("ordua")
-                });
+                eredua.addRow(new Object[]{ rs.getString("mota"), rs.getDate("data"), rs.getTime("ordua") });
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(dialog, "Errorea historiala kargatzean: " + e.getMessage());
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         
-        // Itxi botoia behean
-        JButton btnItxi = new JButton("Itxi");
-        btnItxi.addActionListener(e -> dialog.dispose());
-        JPanel pnlBtn = new JPanel();
-        pnlBtn.add(btnItxi);
-        dialog.add(pnlBtn, BorderLayout.SOUTH);
-
-        dialog.setVisible(true);
+        JButton itxiBotoia = new JButton("Itxi");
+        itxiBotoia.addActionListener(e -> elkarrizketa.dispose());
+        JPanel botoiPanela = new JPanel();
+        botoiPanela.add(itxiBotoia);
+        elkarrizketa.add(botoiPanela, BorderLayout.SOUTH);
+        elkarrizketa.setVisible(true);
     }
 
     // --- TAB SARRERAK ---
-    private void crearTabSarrerak() {
-        JPanel panelSarrerak = new JPanel(new BorderLayout());
-        panelSarrerak.setOpaque(false);
+    private void sarreraTabSortu() {
+        JPanel sarreraPanela = new JPanel(new BorderLayout());
+        sarreraPanela.setOpaque(false);
         
-        JPanel panelSarrerakTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelSarrerakTop.setOpaque(false);
-        panelSarrerakTop.add(new JLabel("Egoera Iragazi:"));
+        JPanel goikoAukeraPanela = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        goikoAukeraPanela.setOpaque(false);
+        goikoAukeraPanela.add(new JLabel("Egoera Iragazi:"));
         
-        comboFilterEgoera = new JComboBox<>();
-        comboFilterEgoera.addItem("Denak");
-        comboFilterEgoera.addItem("Bidean");
-        comboFilterEgoera.addItem("Jasota");
-        comboFilterEgoera.addActionListener(e -> cargarDatosSarrerak()); 
-        panelSarrerakTop.add(comboFilterEgoera);
+        egoeraIragazkia = new JComboBox<>();
+        egoeraIragazkia.addItem("Denak");
+        egoeraIragazkia.addItem("Bidean");
+        egoeraIragazkia.addItem("Jasota");
+        egoeraIragazkia.addActionListener(e -> sarreraDatuakKargatu()); 
+        goikoAukeraPanela.add(egoeraIragazkia);
         
-        JButton btnRefrescarSarrerak = new JButton("Eguneratu Zerrenda");
-        btnRefrescarSarrerak.addActionListener(e -> cargarDatosSarrerak());
-        panelSarrerakTop.add(btnRefrescarSarrerak);
+        JButton eguneratuBotoia = new JButton("Eguneratu Zerrenda");
+        eguneratuBotoia.addActionListener(e -> sarreraDatuakKargatu());
+        goikoAukeraPanela.add(eguneratuBotoia);
         
-        panelSarrerak.add(panelSarrerakTop, BorderLayout.NORTH);
+        sarreraPanela.add(goikoAukeraPanela, BorderLayout.NORTH);
         
-        tableSarrerak = new JTable();
-        JScrollPane scroll = new JScrollPane(tableSarrerak);
-        scroll.setOpaque(false);
-        scroll.getViewport().setOpaque(false);
-        panelSarrerak.add(scroll, BorderLayout.CENTER);
+        sarreraTaula = new JTable();
+        JScrollPane ruli = new JScrollPane(sarreraTaula);
+        sarreraPanela.add(ruli, BorderLayout.CENTER);
         
-        tabbedPane.addTab("Sarrerak", null, panelSarrerak, null);
+        pestainaPanela.addTab("Sarrerak", null, sarreraPanela, null);
     }
 
     // --- TAB BILTEGIAK ---
-    private void crearTabBiltegiak() {
-        JPanel panelBiltegiak = new JPanel(new BorderLayout());
-        panelBiltegiak.setOpaque(false);
+    private void biltegiTabSortu() {
+        JPanel biltegiPanela = new JPanel(new BorderLayout());
+        biltegiPanela.setOpaque(false);
         
-        JPanel panelBiltegiBtns = new JPanel();
-        panelBiltegiBtns.setOpaque(false);
-        JButton btnSortuBiltegia = new JButton("Sortu Biltegia");
-        JButton btnAldatuBiltegia = new JButton("Aldatu");
-        JButton btnEzabatuBiltegia = new JButton("Ezabatu");
+        JPanel botoiPanela = new JPanel();
+        botoiPanela.setOpaque(false);
+        JButton sortuBotoia = new JButton("Sortu Biltegia");
+        JButton aldatuBotoia = new JButton("Aldatu");
+        JButton ezabatuBotoia = new JButton("Ezabatu");
         
-        btnSortuBiltegia.addActionListener(e -> sortuBiltegia());
-        btnAldatuBiltegia.addActionListener(e -> aldatuBiltegia());
-        btnEzabatuBiltegia.addActionListener(e -> ezabatuBiltegia());
+        sortuBotoia.addActionListener(e -> sortuBiltegia());
+        aldatuBotoia.addActionListener(e -> aldatuBiltegia());
+        ezabatuBotoia.addActionListener(e -> ezabatuBiltegia());
         
-        panelBiltegiBtns.add(btnSortuBiltegia);
-        panelBiltegiBtns.add(btnAldatuBiltegia);
-        panelBiltegiBtns.add(btnEzabatuBiltegia);
-        panelBiltegiak.add(panelBiltegiBtns, BorderLayout.NORTH);
+        botoiPanela.add(sortuBotoia);
+        botoiPanela.add(aldatuBotoia);
+        botoiPanela.add(ezabatuBotoia);
+        biltegiPanela.add(botoiPanela, BorderLayout.NORTH);
         
-        tableBiltegiak = new JTable();
-        JScrollPane scroll = new JScrollPane(tableBiltegiak);
-        scroll.setOpaque(false);
-        scroll.getViewport().setOpaque(false);
-        panelBiltegiak.add(scroll, BorderLayout.CENTER);
+        biltegiTaula = new JTable();
+        biltegiPanela.add(new JScrollPane(biltegiTaula), BorderLayout.CENTER);
         
-        tabbedPane.addTab("Biltegiak", null, panelBiltegiak, null);
+        pestainaPanela.addTab("Biltegiak", null, biltegiPanela, null);
     }
 
     // --- TAB PRODUKTUAK ---
-    private void crearTabProduktuak() {
-        JPanel panelStock = new JPanel(new BorderLayout());
-        panelStock.setOpaque(false);
+    private void produktuTabSortu() {
+        JPanel produktuPanela = new JPanel(new BorderLayout());
+        produktuPanela.setOpaque(false);
         
-        JPanel panelStockBtns = new JPanel();
-        panelStockBtns.setOpaque(false);
-        JButton btnAldatuKokapena = new JButton("Aldatu Biltegia");
-        JButton btnJasoProduktua = new JButton("Markatu 'Jasota'");
-        JButton btnBideanProduktua = new JButton("Markatu 'Bidean'");
+        JPanel botoiPanela = new JPanel();
+        botoiPanela.setOpaque(false);
+        JButton aldatuKokapenaBotoia = new JButton("Aldatu Biltegia");
+        JButton jasoBotoia = new JButton("Markatu 'Jasota'");
+        JButton bideanBotoia = new JButton("Markatu 'Bidean'");
         
-        btnAldatuKokapena.addActionListener(e -> aldatuProduktuarenBiltegia());
-        btnJasoProduktua.addActionListener(e -> markatuProduktuaJasota());
-        btnBideanProduktua.addActionListener(e -> markatuProduktuaBidean());
+        aldatuKokapenaBotoia.addActionListener(e -> aldatuProduktuarenBiltegia());
+        jasoBotoia.addActionListener(e -> markatuProduktuaJasota());
+        bideanBotoia.addActionListener(e -> markatuProduktuaBidean());
         
-        panelStockBtns.add(btnAldatuKokapena);
-        panelStockBtns.add(btnJasoProduktua);
-        panelStockBtns.add(btnBideanProduktua);
-        panelStock.add(panelStockBtns, BorderLayout.NORTH);
+        botoiPanela.add(aldatuKokapenaBotoia);
+        botoiPanela.add(jasoBotoia);
+        botoiPanela.add(bideanBotoia);
+        produktuPanela.add(botoiPanela, BorderLayout.NORTH);
         
-        tableProduktuak = new JTable();
-        JScrollPane scroll = new JScrollPane(tableProduktuak);
-        scroll.setOpaque(false);
-        scroll.getViewport().setOpaque(false);
-        panelStock.add(scroll, BorderLayout.CENTER);
+        produktuTaula = new JTable();
+        produktuPanela.add(new JScrollPane(produktuTaula), BorderLayout.CENTER);
         
-        tabbedPane.addTab("Produktuak eta Kokapena", null, panelStock, null);
+        pestainaPanela.addTab("Produktuak eta Kokapena", null, produktuPanela, null);
     }
 
     // --- TAB SARRERA BERRIA ---
-    private void crearTabSarreraBerria() {
-        JPanel panelSarreraBerria = new JPanel(new BorderLayout());
-        panelSarreraBerria.setOpaque(false);
+    private void sarreraBerriaTabSortu() {
+        JPanel sarreraBerriaPanela = new JPanel(new BorderLayout());
+        sarreraBerriaPanela.setOpaque(false);
         
-        JPanel panelFormContainer = new JPanel(new BorderLayout()) {
+        JPanel formularioPanela = new JPanel(new BorderLayout()) {
+            private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -522,158 +409,151 @@ public class MenuLogistika extends JFrame {
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        panelFormContainer.setOpaque(false);
-        panelFormContainer.setBorder(BorderFactory.createTitledBorder("Sarrera eta Produktu Berriaren Datuak"));
+        formularioPanela.setOpaque(false);
+        formularioPanela.setBorder(BorderFactory.createTitledBorder("Sarrera eta Produktu Berriaren Datuak"));
         
-        JPanel panelHornitzailea = new JPanel(new GridLayout(2, 1));
-        panelHornitzailea.setOpaque(false);
-        panelHornitzailea.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
+        JPanel hornitzailePanela = new JPanel(new GridLayout(2, 1));
+        hornitzailePanela.setOpaque(false);
         
-        JPanel panelHornExisting = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelHornExisting.setOpaque(false);
-        comboHornitzaileak = new JComboBox<>();
-        chkHornitzaileBerria = new JCheckBox("Hornitzaile Berria Sortu?");
-        chkHornitzaileBerria.setOpaque(false);
-        chkHornitzaileBerria.addActionListener(e -> toggleHornitzaileMode()); 
+        JPanel hornAukeratuPanela = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        hornAukeratuPanela.setOpaque(false);
+        hornitzaileHautatzailea = new JComboBox<>();
+        hornitzaileBerriaAukera = new JCheckBox("Hornitzaile Berria Sortu?");
+        hornitzaileBerriaAukera.setOpaque(false);
+        hornitzaileBerriaAukera.addActionListener(e -> hornitzaileModuaAldatu()); 
         
-        panelHornExisting.add(new JLabel("Hornitzailea Aukeratu: "));
-        panelHornExisting.add(comboHornitzaileak);
-        panelHornExisting.add(chkHornitzaileBerria);
+        hornAukeratuPanela.add(new JLabel("Hornitzailea Aukeratu: "));
+        hornAukeratuPanela.add(hornitzaileHautatzailea);
+        hornAukeratuPanela.add(hornitzaileBerriaAukera);
         
-        JPanel panelHornNew = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelHornNew.setOpaque(false);
-        txtNewHornIzena = new JTextField(15);
-        txtNewHornEmail = new JTextField(15);
-        txtNewHornIFZ = new JTextField(10);
+        JPanel hornBerriaPanela = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        hornBerriaPanela.setOpaque(false);
+        izenaBerriaTestua = new JTextField(15);
+        postaBerriaTestua = new JTextField(15);
+        ifzBerriaTestua = new JTextField(10);
         
-        panelHornNew.add(new JLabel("Izena:"));
-        panelHornNew.add(txtNewHornIzena);
-        panelHornNew.add(new JLabel("Emaila:"));
-        panelHornNew.add(txtNewHornEmail);
-        panelHornNew.add(new JLabel("IFZ:"));
-        panelHornNew.add(txtNewHornIFZ);
+        hornBerriaPanela.add(new JLabel("Izena:"));
+        hornBerriaPanela.add(izenaBerriaTestua);
+        hornBerriaPanela.add(new JLabel("Emaila:"));
+        hornBerriaPanela.add(postaBerriaTestua);
+        hornBerriaPanela.add(new JLabel("IFZ:"));
+        hornBerriaPanela.add(ifzBerriaTestua);
         
-        setNewHornitzaileEnabled(false);
+        hornitzaileBerriaGaitu(false);
         
-        panelHornitzailea.add(panelHornExisting);
-        panelHornitzailea.add(panelHornNew);
-        panelFormContainer.add(panelHornitzailea, BorderLayout.NORTH); 
+        hornitzailePanela.add(hornAukeratuPanela);
+        hornitzailePanela.add(hornBerriaPanela);
+        formularioPanela.add(hornitzailePanela, BorderLayout.NORTH); 
         
-        JPanel panelForm = new JPanel(new GridBagLayout()); 
-        panelForm.setOpaque(false);
+        JPanel formPanela = new JPanel(new GridBagLayout()); 
+        formPanela.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        txtProduktuIzena = new JTextField(15);
-        txtMarka = new JTextField(15);
-        comboKategoriak = new JComboBox<>();
-        comboMotak = new JComboBox<>();
-        comboBiltegiakSarrera = new JComboBox<>();
-        txtKantitatea = new JTextField(5);
+        produktuIzenaTestua = new JTextField(15);
+        markaTestua = new JTextField(15);
+        kategoriaHautatzailea = new JComboBox<>();
+        motaHautatzailea = new JComboBox<>();
+        biltegiHautatzaileaSarrera = new JComboBox<>();
+        kantitateTestua = new JTextField(5);
         
-        comboMotak.addItem("Generikoa");
-        comboMotak.addItem("Eramangarria");
-        comboMotak.addItem("Mahai-gainekoa");
-        comboMotak.addItem("Mugikorra");
-        comboMotak.addItem("Tableta");
-        comboMotak.addItem("Zerbitzaria");
-        comboMotak.addItem("Pantaila");
-        comboMotak.addItem("Softwarea");
-        comboMotak.addItem("Periferikoak");
-        comboMotak.addItem("Kableak");
+        motaHautatzailea.addItem("Generikoa");
+        motaHautatzailea.addItem("Eramangarria");
+        motaHautatzailea.addItem("Mahai-gainekoa");
+        motaHautatzailea.addItem("Mugikorra");
+        motaHautatzailea.addItem("Tableta");
+        motaHautatzailea.addItem("Zerbitzaria");
+        motaHautatzailea.addItem("Pantaila");
+        motaHautatzailea.addItem("Softwarea");
+        motaHautatzailea.addItem("Periferikoak");
+        motaHautatzailea.addItem("Kableak");
 
-        // Formularioa (WindowBuilder-ek gbc klonatua behar du)
-        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.0; panelForm.add(new JLabel("Prod. Izena:"), (GridBagConstraints)gbc.clone());
-        gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 1.0; panelForm.add(txtProduktuIzena, (GridBagConstraints)gbc.clone());
-        gbc.gridx = 2; gbc.gridy = 0; gbc.weightx = 0.0; panelForm.add(new JLabel("Marka:"), (GridBagConstraints)gbc.clone());
-        gbc.gridx = 3; gbc.gridy = 0; gbc.weightx = 1.0; panelForm.add(txtMarka, (GridBagConstraints)gbc.clone());
+        gbc.gridx = 0; gbc.gridy = 0; formPanela.add(new JLabel("Prod. Izena:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 1.0; formPanela.add(produktuIzenaTestua, gbc);
+        gbc.gridx = 2; gbc.gridy = 0; gbc.weightx = 0.0; formPanela.add(new JLabel("Marka:"), gbc);
+        gbc.gridx = 3; gbc.gridy = 0; gbc.weightx = 1.0; formPanela.add(markaTestua, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0; panelForm.add(new JLabel("Kategoria:"), (GridBagConstraints)gbc.clone());
-        gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 1.0; panelForm.add(comboKategoriak, (GridBagConstraints)gbc.clone());
-        gbc.gridx = 2; gbc.gridy = 1; gbc.weightx = 0.0; panelForm.add(new JLabel("Mota:"), (GridBagConstraints)gbc.clone());
-        gbc.gridx = 3; gbc.gridy = 1; gbc.weightx = 1.0; panelForm.add(comboMotak, (GridBagConstraints)gbc.clone());
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0; formPanela.add(new JLabel("Kategoria:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 1.0; formPanela.add(kategoriaHautatzailea, gbc);
+        gbc.gridx = 2; gbc.gridy = 1; gbc.weightx = 0.0; formPanela.add(new JLabel("Mota:"), gbc);
+        gbc.gridx = 3; gbc.gridy = 1; gbc.weightx = 1.0; formPanela.add(motaHautatzailea, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0; panelForm.add(new JLabel("Biltegia:"), (GridBagConstraints)gbc.clone());
-        gbc.gridx = 1; gbc.gridy = 2; gbc.weightx = 1.0; panelForm.add(comboBiltegiakSarrera, (GridBagConstraints)gbc.clone());
-        gbc.gridx = 2; gbc.gridy = 2; gbc.weightx = 0.0; panelForm.add(new JLabel("Kantitatea:"), (GridBagConstraints)gbc.clone());
-        gbc.gridx = 3; gbc.gridy = 2; gbc.weightx = 1.0; panelForm.add(txtKantitatea, (GridBagConstraints)gbc.clone());
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0; formPanela.add(new JLabel("Biltegia:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 2; gbc.weightx = 1.0; formPanela.add(biltegiHautatzaileaSarrera, gbc);
+        gbc.gridx = 2; gbc.gridy = 2; gbc.weightx = 0.0; formPanela.add(new JLabel("Kantitatea:"), gbc);
+        gbc.gridx = 3; gbc.gridy = 2; gbc.weightx = 1.0; formPanela.add(kantitateTestua, gbc);
         
-        JButton btnGehituLerroa = new JButton("Gehitu Zerrendara +");
-        btnGehituLerroa.addActionListener(e -> gehituLerroaTaulara());
+        JButton gehituBotoia = new JButton("Gehitu Zerrendara +");
+        gehituBotoia.addActionListener(e -> gehituLerroaTaulara());
         
-        JPanel panelCenterForm = new JPanel(new BorderLayout());
-        panelCenterForm.setOpaque(false);
-        panelCenterForm.add(panelForm, BorderLayout.CENTER);
+        JPanel erdikoFormPanela = new JPanel(new BorderLayout());
+        erdikoFormPanela.setOpaque(false);
+        erdikoFormPanela.add(formPanela, BorderLayout.CENTER);
         
-        JPanel panelBtn = new JPanel();
-        panelBtn.setOpaque(false);
-        panelBtn.add(btnGehituLerroa);
-        panelCenterForm.add(panelBtn, BorderLayout.SOUTH);
+        JPanel botoiHustuPanela = new JPanel();
+        botoiHustuPanela.setOpaque(false);
+        botoiHustuPanela.add(gehituBotoia);
+        erdikoFormPanela.add(botoiHustuPanela, BorderLayout.SOUTH);
         
-        panelFormContainer.add(panelCenterForm, BorderLayout.CENTER);
-        panelSarreraBerria.add(panelFormContainer, BorderLayout.NORTH);
+        formularioPanela.add(erdikoFormPanela, BorderLayout.CENTER);
+        sarreraBerriaPanela.add(formularioPanela, BorderLayout.NORTH);
         
-        String[] colNames = {"Izena", "Marka", "Kategoria", "Mota", "Biltegia", "Kantitatea"};
-        modelLerroakBerriak = new DefaultTableModel(colNames, 0);
-        tableLerroakBerriak = new JTable(modelLerroakBerriak);
+        String[] zutabeIzenak = {"Izena", "Marka", "Kategoria", "Mota", "Biltegia", "Kantitatea"};
+        lerroBerriEredua = new DefaultTableModel(zutabeIzenak, 0);
+        lerroBerriTaula = new JTable(lerroBerriEredua);
+        sarreraBerriaPanela.add(new JScrollPane(lerroBerriTaula), BorderLayout.CENTER);
         
-        JScrollPane scrollNew = new JScrollPane(tableLerroakBerriak);
-        scrollNew.setOpaque(false);
-        scrollNew.getViewport().setOpaque(false);
-        panelSarreraBerria.add(scrollNew, BorderLayout.CENTER);
+        JButton gordeBotoia = new JButton("GORDE SARRERA ETA SORTU PRODUKTUAK");
+        gordeBotoia.setBackground(new Color(0, 128, 0));
+        gordeBotoia.setForeground(Color.WHITE);
+        gordeBotoia.setFont(new Font("Arial", Font.BOLD, 14));
+        gordeBotoia.addActionListener(e -> gordeSarreraOsoa());
+        sarreraBerriaPanela.add(gordeBotoia, BorderLayout.SOUTH);
         
-        JButton btnGordeSarrera = new JButton("GORDE SARRERA ETA SORTU PRODUKTUAK");
-        btnGordeSarrera.setBackground(new Color(0, 128, 0));
-        btnGordeSarrera.setForeground(Color.WHITE);
-        btnGordeSarrera.setFont(new Font("Arial", Font.BOLD, 14));
-        btnGordeSarrera.addActionListener(e -> gordeSarreraOsoa());
-        panelSarreraBerria.add(btnGordeSarrera, BorderLayout.SOUTH);
-        
-        tabbedPane.addTab("Sarrera Berria", null, panelSarreraBerria, null);
+        pestainaPanela.addTab("Sarrera Berria", null, sarreraBerriaPanela, null);
     }
 
-    // --- LAGUNTZAILEAK (COMBOS, LOGIKA) ---
-    private void toggleHornitzaileMode() {
-        boolean isNew = chkHornitzaileBerria.isSelected();
-        setNewHornitzaileEnabled(isNew);
-        comboHornitzaileak.setEnabled(!isNew);
+    // --- LAGUNTZAILEAK ---
+    private void hornitzaileModuaAldatu() {
+        boolean berriaDa = hornitzaileBerriaAukera.isSelected();
+        hornitzaileBerriaGaitu(berriaDa);
+        hornitzaileHautatzailea.setEnabled(!berriaDa);
     }
     
-    private void setNewHornitzaileEnabled(boolean enabled) {
-        txtNewHornIzena.setEnabled(enabled);
-        txtNewHornEmail.setEnabled(enabled);
-        txtNewHornIFZ.setEnabled(enabled);
-        if(!enabled) {
-            txtNewHornIzena.setText("");
-            txtNewHornEmail.setText("");
-            txtNewHornIFZ.setText("");
+    private void hornitzaileBerriaGaitu(boolean gaitu) {
+        izenaBerriaTestua.setEnabled(gaitu);
+        postaBerriaTestua.setEnabled(gaitu);
+        ifzBerriaTestua.setEnabled(gaitu);
+        if(!gaitu) {
+            izenaBerriaTestua.setText("");
+            postaBerriaTestua.setText("");
+            ifzBerriaTestua.setText("");
         }
     }
 
-    private void cargarCombosSarrera() {
-        comboHornitzaileak.removeAllItems();
-        comboKategoriak.removeAllItems();
-        comboBiltegiakSarrera.removeAllItems();
-        if (java.beans.Beans.isDesignTime()) return;
-        try (Connection con = DB_konexioa.konektatu()) {
-            Statement st = con.createStatement();
-            ResultSet rsH = st.executeQuery("SELECT id_hornitzailea, izena_soziala FROM hornitzaileak");
-            while(rsH.next()) comboHornitzaileak.addItem(new HornitzaileItem(rsH.getInt(1), rsH.getString(2)));
-            ResultSet rsK = st.executeQuery("SELECT id_kategoria, izena FROM produktu_kategoriak");
-            while(rsK.next()) comboKategoriak.addItem(new KategoriaItem(rsK.getInt(1), rsK.getString(2)));
-            ResultSet rsB = st.executeQuery("SELECT id_biltegia, izena FROM biltegiak");
-            while(rsB.next()) comboBiltegiakSarrera.addItem(new BiltegiItem(rsB.getInt(1), rsB.getString(2)));
+    private void sarreraHautatzaileakKargatu() {
+        hornitzaileHautatzailea.removeAllItems();
+        kategoriaHautatzailea.removeAllItems();
+        biltegiHautatzaileaSarrera.removeAllItems();
+        try (Connection konexioa = DB_Konexioa.konektatu()) {
+            Statement sententzia = konexioa.createStatement();
+            ResultSet rsH = sententzia.executeQuery("SELECT id_hornitzailea, izena_soziala FROM hornitzaileak");
+            while(rsH.next()) hornitzaileHautatzailea.addItem(new HornitzaileElementua(rsH.getInt(1), rsH.getString(2)));
+            ResultSet rsK = sententzia.executeQuery("SELECT id_kategoria, izena FROM produktu_kategoriak");
+            while(rsK.next()) kategoriaHautatzailea.addItem(new KategoriaElementua(rsK.getInt(1), rsK.getString(2)));
+            ResultSet rsB = sententzia.executeQuery("SELECT id_biltegia, izena FROM biltegiak");
+            while(rsB.next()) biltegiHautatzaileaSarrera.addItem(new BiltegiElementua(rsB.getInt(1), rsB.getString(2)));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void gehituLerroaTaulara() {
-        String izena = txtProduktuIzena.getText();
-        String marka = txtMarka.getText();
-        KategoriaItem kat = (KategoriaItem) comboKategoriak.getSelectedItem();
-        String mota = (String) comboMotak.getSelectedItem();
-        BiltegiItem bilt = (BiltegiItem) comboBiltegiakSarrera.getSelectedItem();
-        String kantiStr = txtKantitatea.getText();
+        String izena = produktuIzenaTestua.getText();
+        String marka = markaTestua.getText();
+        KategoriaElementua kat = (KategoriaElementua) kategoriaHautatzailea.getSelectedItem();
+        String mota = (String) motaHautatzailea.getSelectedItem();
+        BiltegiElementua bilt = (BiltegiElementua) biltegiHautatzaileaSarrera.getSelectedItem();
+        String kantiStr = kantitateTestua.getText();
         if (izena.isEmpty() || marka.isEmpty() || kantiStr.isEmpty() || kat == null || bilt == null) {
             JOptionPane.showMessageDialog(this, "Mesedez, bete produktuaren eremu guztiak.");
             return;
@@ -681,35 +561,35 @@ public class MenuLogistika extends JFrame {
         try {
             int kanti = Integer.parseInt(kantiStr);
             if (kanti <= 0) throw new NumberFormatException();
-            modelLerroakBerriak.addRow(new Object[]{izena, marka, kat, mota, bilt, kanti});
-            txtProduktuIzena.setText(""); txtMarka.setText(""); txtKantitatea.setText("");
-            txtProduktuIzena.requestFocus();
+            lerroBerriEredua.addRow(new Object[]{izena, marka, kat, mota, bilt, kanti});
+            produktuIzenaTestua.setText(""); markaTestua.setText(""); kantitateTestua.setText("");
+            produktuIzenaTestua.requestFocus();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Kantitateak zenbakia izan behar du.");
         }
     }
 
     private void gordeSarreraOsoa() {
-        if (modelLerroakBerriak.getRowCount() == 0) {
+        if (lerroBerriEredua.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Ez dago produkturik zerrendan."); return;
         }
         int hornitzaileaId = -1;
-        if (chkHornitzaileBerria.isSelected()) {
-            String izena = txtNewHornIzena.getText().trim();
-            String email = txtNewHornEmail.getText().trim();
-            String ifz = txtNewHornIFZ.getText().trim();
+        if (hornitzaileBerriaAukera.isSelected()) {
+            String izena = izenaBerriaTestua.getText().trim();
+            String email = postaBerriaTestua.getText().trim();
+            String ifz = ifzBerriaTestua.getText().trim();
             if (izena.isEmpty() || email.isEmpty() || ifz.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Bete hornitzaile berriaren datuak."); return;
             }
-            try (Connection con = DB_konexioa.konektatu()) {
-                PreparedStatement pstCheck = con.prepareStatement("SELECT COUNT(*) FROM hornitzaileak WHERE emaila = ? OR ifz_nan = ?");
+            try (Connection konexioa = DB_Konexioa.konektatu()) {
+                PreparedStatement pstCheck = konexioa.prepareStatement("SELECT COUNT(*) FROM hornitzaileak WHERE emaila = ? OR ifz_nan = ?");
                 pstCheck.setString(1, email); pstCheck.setString(2, ifz);
                 ResultSet rsCheck = pstCheck.executeQuery();
                 if (rsCheck.next() && rsCheck.getInt(1) > 0) {
                     JOptionPane.showMessageDialog(this, "ERROREA: Hornitzaile hori existitzen da jada.", "Bikoiztua", JOptionPane.ERROR_MESSAGE); return;
                 }
                 String sqlInsertH = "INSERT INTO hornitzaileak (izena_soziala, ifz_nan, emaila, pasahitza, helbidea, herria_id, posta_kodea) VALUES (?, ?, ?, '1234', 'Zehaztugabea', 1, '00000')";
-                PreparedStatement pstH = con.prepareStatement(sqlInsertH, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement pstH = konexioa.prepareStatement(sqlInsertH, Statement.RETURN_GENERATED_KEYS);
                 pstH.setString(1, izena); pstH.setString(2, ifz); pstH.setString(3, email);
                 pstH.executeUpdate();
                 ResultSet rsKey = pstH.getGeneratedKeys();
@@ -718,17 +598,17 @@ public class MenuLogistika extends JFrame {
                 JOptionPane.showMessageDialog(this, "Errorea hornitzailea sortzean: " + e.getMessage()); return;
             }
         } else {
-            HornitzaileItem item = (HornitzaileItem) comboHornitzaileak.getSelectedItem();
+            HornitzaileElementua item = (HornitzaileElementua) hornitzaileHautatzailea.getSelectedItem();
             if (item != null) hornitzaileaId = item.id;
             else { JOptionPane.showMessageDialog(this, "Aukeratu hornitzaile bat."); return; }
         }
 
         Connection con = null;
         try {
-            con = DB_konexioa.konektatu(); con.setAutoCommit(false); 
+            con = DB_Konexioa.konektatu(); con.setAutoCommit(false); 
             String sqlSarrera = "INSERT INTO sarrerak (hornitzailea_id, langilea_id, sarrera_egoera) VALUES (?, ?, 'Bidean')";
             PreparedStatement pstSarrera = con.prepareStatement(sqlSarrera, Statement.RETURN_GENERATED_KEYS);
-            pstSarrera.setInt(1, hornitzaileaId); pstSarrera.setInt(2, this.unekoLangileaId); 
+            pstSarrera.setInt(1, hornitzaileaId); pstSarrera.setInt(2, this.erabiltzaileId); 
             pstSarrera.executeUpdate();
             ResultSet rsKeys = pstSarrera.getGeneratedKeys();
             int sarreraId = -1;
@@ -739,13 +619,13 @@ public class MenuLogistika extends JFrame {
             String sqlLerroa = "INSERT INTO sarrera_lerroak (sarrera_id, produktua_id, kantitatea, sarrera_lerro_egoera) VALUES (?, ?, ?, 'Bidean')";
             PreparedStatement pstLerroa = con.prepareStatement(sqlLerroa);
 
-            for (int i = 0; i < modelLerroakBerriak.getRowCount(); i++) {
-                String izena = (String) modelLerroakBerriak.getValueAt(i, 0);
-                String marka = (String) modelLerroakBerriak.getValueAt(i, 1);
-                KategoriaItem kat = (KategoriaItem) modelLerroakBerriak.getValueAt(i, 2);
-                String mota = (String) modelLerroakBerriak.getValueAt(i, 3);
-                BiltegiItem bilt = (BiltegiItem) modelLerroakBerriak.getValueAt(i, 4);
-                int kanti = (int) modelLerroakBerriak.getValueAt(i, 5);
+            for (int i = 0; i < lerroBerriEredua.getRowCount(); i++) {
+                String izena = (String) lerroBerriEredua.getValueAt(i, 0);
+                String marka = (String) lerroBerriEredua.getValueAt(i, 1);
+                KategoriaElementua kat = (KategoriaElementua) lerroBerriEredua.getValueAt(i, 2);
+                String mota = (String) lerroBerriEredua.getValueAt(i, 3);
+                BiltegiElementua bilt = (BiltegiElementua) lerroBerriEredua.getValueAt(i, 4);
+                int kanti = (int) lerroBerriEredua.getValueAt(i, 5);
                 pstProd.setString(1, izena); pstProd.setString(2, marka); pstProd.setInt(3, kat.id);
                 pstProd.setString(4, mota); pstProd.setInt(5, bilt.id); pstProd.setInt(6, hornitzaileaId);
                 pstProd.setInt(7, kanti); pstProd.executeUpdate();
@@ -756,8 +636,8 @@ public class MenuLogistika extends JFrame {
             }
             con.commit();
             JOptionPane.showMessageDialog(this, "Sarrera ondo sortu da! ID: " + sarreraId);
-            modelLerroakBerriak.setRowCount(0); txtNewHornIzena.setText(""); txtNewHornEmail.setText(""); txtNewHornIFZ.setText("");
-            chkHornitzaileBerria.setSelected(false); toggleHornitzaileMode(); cargarCombosSarrera(); 
+            lerroBerriEredua.setRowCount(0); izenaBerriaTestua.setText(""); postaBerriaTestua.setText(""); ifzBerriaTestua.setText("");
+            hornitzaileBerriaAukera.setSelected(false); hornitzaileModuaAldatu(); sarreraHautatzaileakKargatu(); 
         } catch (SQLException e) {
             try { if (con != null) con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             JOptionPane.showMessageDialog(this, "Errorea prozesuan: " + e.getMessage()); e.printStackTrace();
@@ -766,69 +646,66 @@ public class MenuLogistika extends JFrame {
         }
     }
 
-    private void cargarDatosSarrerak() {
+    private void sarreraDatuakKargatu() {
         String baseSql = "SELECT s.id_sarrera, h.izena_soziala AS Hornitzailea, s.data, s.sarrera_egoera FROM sarrerak s JOIN hornitzaileak h ON s.hornitzailea_id = h.id_hornitzailea ";
-        String filter = (String) comboFilterEgoera.getSelectedItem();
+        String filter = (String) egoeraIragazkia.getSelectedItem();
         String sql = baseSql;
         if ("Bidean".equals(filter)) sql += " WHERE s.sarrera_egoera = 'Bidean' ";
         else if ("Jasota".equals(filter)) sql += " WHERE s.sarrera_egoera = 'Jasota' ";
         sql += " ORDER BY s.data DESC";
-        if (java.beans.Beans.isDesignTime()) return;
-        try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
-            DefaultTableModel model = TablaModelador.construirModelo(pst.executeQuery());
-            tableSarrerak.setModel(model); sorterSarrerak = new TableRowSorter<>(model); tableSarrerak.setRowSorter(sorterSarrerak);
+        try (Connection con = DB_Konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
+            DefaultTableModel eredua = TaulaModelatzailea.ereduaEraiki(pst.executeQuery());
+            sarreraTaula.setModel(eredua); sarreraOrdenatzailea = new TableRowSorter<>(eredua); sarreraTaula.setRowSorter(sarreraOrdenatzailea);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void cargarDatosBiltegiak() {
+    private void biltegiDatuakKargatu() {
         String sql = "SELECT id_biltegia, izena, biltegi_sku FROM biltegiak";
-        if (java.beans.Beans.isDesignTime()) return;
-        try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
-            DefaultTableModel model = TablaModelador.construirModelo(pst.executeQuery());
-            tableBiltegiak.setModel(model); sorterBiltegiak = new TableRowSorter<>(model); tableBiltegiak.setRowSorter(sorterBiltegiak);
+        try (Connection con = DB_Konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
+            DefaultTableModel eredua = TaulaModelatzailea.ereduaEraiki(pst.executeQuery());
+            biltegiTaula.setModel(eredua); biltegiOrdenatzailea = new TableRowSorter<>(eredua); biltegiTaula.setRowSorter(biltegiOrdenatzailea);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void cargarDatosProduktuak() {
+    private void produktuDatuakKargatu() {
         String sql = "SELECT p.id_produktua, p.izena AS Produktua, b.izena AS Biltegia, s.id_sarrera AS 'Sarrera ID', sl.sarrera_lerro_egoera AS Egoera, s.data AS 'Sarrera Data', sl.id_sarrera_lerroa FROM sarrera_lerroak sl JOIN sarrerak s ON sl.sarrera_id = s.id_sarrera JOIN produktuak p ON sl.produktua_id = p.id_produktua JOIN biltegiak b ON p.biltegi_id = b.id_biltegia ORDER BY s.data DESC";
-        if (java.beans.Beans.isDesignTime()) return;
-        try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
-            DefaultTableModel model = TablaModelador.construirModelo(pst.executeQuery());
-            tableProduktuak.setModel(model); sorterProduktuak = new TableRowSorter<>(model); tableProduktuak.setRowSorter(sorterProduktuak);
+        try (Connection con = DB_Konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
+            DefaultTableModel eredua = TaulaModelatzailea.ereduaEraiki(pst.executeQuery());
+            produktuTaula.setModel(eredua); produktuOrdenatzailea = new TableRowSorter<>(eredua); produktuTaula.setRowSorter(produktuOrdenatzailea);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void filtrar() {
-        String texto = txtBilatu.getText();
-        TableRowSorter<DefaultTableModel> currentSorter = null;
-        int index = tabbedPane.getSelectedIndex();
-        if (index == 0) currentSorter = sorterSarrerak;
-        else if (index == 1) currentSorter = sorterBiltegiak;
-        else if (index == 2) currentSorter = sorterProduktuak;
-        if (currentSorter != null) {
-            if (texto.trim().length() == 0) currentSorter.setRowFilter(null);
-            else currentSorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto));
+    private void filtratu() {
+        String testua = bilatuTestua.getText();
+        TableRowSorter<DefaultTableModel> unekoOrdenatzailea = null;
+        int index = pestainaPanela.getSelectedIndex();
+        if (index == 0) unekoOrdenatzailea = sarreraOrdenatzailea;
+        else if (index == 1) unekoOrdenatzailea = biltegiOrdenatzailea;
+        else if (index == 2) unekoOrdenatzailea = produktuOrdenatzailea;
+        if (unekoOrdenatzailea != null) {
+            if (testua.trim().length() == 0) unekoOrdenatzailea.setRowFilter(null);
+            else unekoOrdenatzailea.setRowFilter(RowFilter.regexFilter("(?i)" + testua));
         }
     }
 
     private void sortuBiltegia() {
-        JTextField izenaField = new JTextField(); JTextField skuField = new JTextField();
-        Object[] message = { "Biltegi Izena:", izenaField, "SKU Kodea:", skuField };
-        int option = JOptionPane.showConfirmDialog(this, message, "Biltegi Berria", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement("INSERT INTO biltegiak (izena, biltegi_sku) VALUES (?, ?)")) {
-                pst.setString(1, izenaField.getText()); pst.setString(2, skuField.getText()); pst.executeUpdate();
-                cargarDatosBiltegiak(); JOptionPane.showMessageDialog(this, "Biltegia sortuta.");
+        JTextField izenaEremua = new JTextField(); JTextField skuEremua = new JTextField();
+        Object[] mezua = { "Biltegi Izena:", izenaEremua, "SKU Kodea:", skuEremua };
+        int aukera = JOptionPane.showConfirmDialog(this, mezua, "Biltegi Berria", JOptionPane.OK_CANCEL_OPTION);
+        if (aukera == JOptionPane.OK_OPTION) {
+            try (Connection con = DB_Konexioa.konektatu(); PreparedStatement pst = con.prepareStatement("INSERT INTO biltegiak (izena, biltegi_sku) VALUES (?, ?)")) {
+                pst.setString(1, izenaEremua.getText()); pst.setString(2, skuEremua.getText()); pst.executeUpdate();
+                biltegiDatuakKargatu(); JOptionPane.showMessageDialog(this, "Biltegia sortuta.");
             } catch (Exception e) { JOptionPane.showMessageDialog(this, "Errorea: " + e.getMessage()); }
         }
     }
 
     private void ezabatuBiltegia() {
-        int row = tableBiltegiak.getSelectedRow(); if (row == -1) return;
-        int modelRow = tableBiltegiak.convertRowIndexToModel(row);
-        Object val = tableBiltegiak.getModel().getValueAt(modelRow, 0);
+        int row = biltegiTaula.getSelectedRow(); if (row == -1) return;
+        int modelRow = biltegiTaula.convertRowIndexToModel(row);
+        Object val = biltegiTaula.getModel().getValueAt(modelRow, 0);
         int id = (val instanceof Number) ? ((Number)val).intValue() : Integer.parseInt(val.toString());
-        try (Connection con = DB_konexioa.konektatu()) {
+        try (Connection con = DB_Konexioa.konektatu()) {
             PreparedStatement pstCheck = con.prepareStatement("SELECT COUNT(*) FROM produktuak WHERE biltegi_id = ?");
             pstCheck.setInt(1, id); ResultSet rs = pstCheck.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
@@ -836,43 +713,43 @@ public class MenuLogistika extends JFrame {
             }
             if (JOptionPane.showConfirmDialog(this, "Ziur ezabatu nahi duzula?", "Ezabatu", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 PreparedStatement pst = con.prepareStatement("DELETE FROM biltegiak WHERE id_biltegia = ?");
-                pst.setInt(1, id); pst.executeUpdate(); cargarDatosBiltegiak();
+                pst.setInt(1, id); pst.executeUpdate(); biltegiDatuakKargatu();
             }
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void aldatuBiltegia() {
-        int row = tableBiltegiak.getSelectedRow(); if (row == -1) return;
-        int modelRow = tableBiltegiak.convertRowIndexToModel(row);
-        int id = Integer.parseInt(tableBiltegiak.getModel().getValueAt(modelRow, 0).toString());
-        String oldName = (String) tableBiltegiak.getModel().getValueAt(modelRow, 1);
-        String oldSku = (String) tableBiltegiak.getModel().getValueAt(modelRow, 2);
-        JTextField izenaField = new JTextField(oldName); JTextField skuField = new JTextField(oldSku);
-        if (JOptionPane.showConfirmDialog(this, new Object[]{ "Izena:", izenaField, "SKU:", skuField }, "Aldatu", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-            try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement("UPDATE biltegiak SET izena = ?, biltegi_sku = ? WHERE id_biltegia = ?")) {
-                pst.setString(1, izenaField.getText()); pst.setString(2, skuField.getText()); pst.setInt(3, id); pst.executeUpdate(); cargarDatosBiltegiak();
+        int row = biltegiTaula.getSelectedRow(); if (row == -1) return;
+        int modelRow = biltegiTaula.convertRowIndexToModel(row);
+        int id = Integer.parseInt(biltegiTaula.getModel().getValueAt(modelRow, 0).toString());
+        String izenaZaharra = (String) biltegiTaula.getModel().getValueAt(modelRow, 1);
+        String skuZaharra = (String) biltegiTaula.getModel().getValueAt(modelRow, 2);
+        JTextField izenaEremua = new JTextField(izenaZaharra); JTextField skuEremua = new JTextField(skuZaharra);
+        if (JOptionPane.showConfirmDialog(this, new Object[]{ "Izena:", izenaEremua, "SKU:", skuEremua }, "Aldatu", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            try (Connection con = DB_Konexioa.konektatu(); PreparedStatement pst = con.prepareStatement("UPDATE biltegiak SET izena = ?, biltegi_sku = ? WHERE id_biltegia = ?")) {
+                pst.setString(1, izenaEremua.getText()); pst.setString(2, skuEremua.getText()); pst.setInt(3, id); pst.executeUpdate(); biltegiDatuakKargatu();
             } catch (Exception e) { e.printStackTrace(); }
         }
     }
 
     private void aldatuProduktuarenBiltegia() {
-        int row = tableProduktuak.getSelectedRow(); if (row == -1) return;
-        int modelRow = tableProduktuak.convertRowIndexToModel(row);
-        int idProd = Integer.parseInt(tableProduktuak.getModel().getValueAt(modelRow, 0).toString());
-        JComboBox<BiltegiItem> combo = new JComboBox<>();
-        try (Connection con = DB_konexioa.konektatu()) {
+        int row = produktuTaula.getSelectedRow(); if (row == -1) return;
+        int modelRow = produktuTaula.convertRowIndexToModel(row);
+        int idProd = Integer.parseInt(produktuTaula.getModel().getValueAt(modelRow, 0).toString());
+        JComboBox<BiltegiElementua> hautatzailea = new JComboBox<>();
+        try (Connection con = DB_Konexioa.konektatu()) {
             ResultSet rs = con.createStatement().executeQuery("SELECT id_biltegia, izena FROM biltegiak");
-            while(rs.next()) combo.addItem(new BiltegiItem(rs.getInt(1), rs.getString(2)));
+            while(rs.next()) hautatzailea.addItem(new BiltegiElementua(rs.getInt(1), rs.getString(2)));
         } catch (Exception e) { e.printStackTrace(); return; }
-        if (JOptionPane.showConfirmDialog(this, combo, "Aukeratu Biltegi Berria", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-            try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement("UPDATE produktuak SET biltegi_id = ? WHERE id_produktua = ?")) {
-                pst.setInt(1, ((BiltegiItem)combo.getSelectedItem()).id); pst.setInt(2, idProd); pst.executeUpdate(); cargarDatosProduktuak();
+        if (JOptionPane.showConfirmDialog(this, hautatzailea, "Aukeratu Biltegi Berria", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            try (Connection con = DB_Konexioa.konektatu(); PreparedStatement pst = con.prepareStatement("UPDATE produktuak SET biltegi_id = ? WHERE id_produktua = ?")) {
+                pst.setInt(1, ((BiltegiElementua)hautatzailea.getSelectedItem()).id); pst.setInt(2, idProd); pst.executeUpdate(); produktuDatuakKargatu();
             } catch (Exception e) { e.printStackTrace(); }
         }
     }
 
     private void egiaztatuSarreraEgoera(int idSarrera) {
-        try (Connection con = DB_konexioa.konektatu()) {
+        try (Connection con = DB_Konexioa.konektatu()) {
             PreparedStatement pst = con.prepareStatement("SELECT COUNT(*) FROM sarrera_lerroak WHERE sarrera_id = ? AND sarrera_lerro_egoera != 'Jasota'");
             pst.setInt(1, idSarrera); ResultSet rs = pst.executeQuery();
             if (rs.next()) {
@@ -883,53 +760,54 @@ public class MenuLogistika extends JFrame {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void markatuProduktuaJasota() { cambiarEstadoProducto("Jasota"); }
-    private void markatuProduktuaBidean() { cambiarEstadoProducto("Bidean"); }
+    private void markatuProduktuaJasota() { produktuEgoeraAldatu("Jasota"); }
+    private void markatuProduktuaBidean() { produktuEgoeraAldatu("Bidean"); }
 
-    private void cambiarEstadoProducto(String nuevoEstado) {
-        int row = tableProduktuak.getSelectedRow(); if (row == -1) return;
-        int modelRow = tableProduktuak.convertRowIndexToModel(row);
-        Object valSarrera = tableProduktuak.getModel().getValueAt(modelRow, 3);
-        Object valLerroa = tableProduktuak.getModel().getValueAt(modelRow, 6);
+    private void produktuEgoeraAldatu(String egoeraBerria) {
+        int row = produktuTaula.getSelectedRow(); if (row == -1) return;
+        int modelRow = produktuTaula.convertRowIndexToModel(row);
+        Object valSarrera = produktuTaula.getModel().getValueAt(modelRow, 3);
+        Object valLerroa = produktuTaula.getModel().getValueAt(modelRow, 6);
         int idSarrera = Integer.parseInt(valSarrera.toString()); int idLerroa = Integer.parseInt(valLerroa.toString());
-        try (Connection con = DB_konexioa.konektatu()) {
+        try (Connection con = DB_Konexioa.konektatu()) {
             PreparedStatement pst = con.prepareStatement("UPDATE sarrera_lerroak SET sarrera_lerro_egoera = ? WHERE id_sarrera_lerroa = ?");
-            pst.setString(1, nuevoEstado); pst.setInt(2, idLerroa);
-            if (pst.executeUpdate() > 0) { egiaztatuSarreraEgoera(idSarrera); cargarDatosProduktuak(); cargarDatosSarrerak(); }
+            pst.setString(1, egoeraBerria); pst.setInt(2, idLerroa);
+            if (pst.executeUpdate() > 0) { egiaztatuSarreraEgoera(idSarrera); produktuDatuakKargatu(); sarreraDatuakKargatu(); }
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void cerrarSesion() {
+    private void saioaItxi() {
         if (JOptionPane.showConfirmDialog(this, "Ziur zaude saioa itxi nahi duzula?", "Logout", JOptionPane.YES_NO_OPTION) == 0) {
-            dispose(); new LoginPanela().setVisible(true);
+            dispose(); new SaioaHastekoPanela().setVisible(true);
         }
     }
 
     // --- HELPER CLASSES ---
-    static class BiltegiItem { int id; String izena; public BiltegiItem(int id, String izena) { this.id = id; this.izena = izena; } public String toString() { return izena; } }
-    static class HornitzaileItem { int id; String izena; public HornitzaileItem(int id, String izena) { this.id = id; this.izena = izena; } public String toString() { return izena; } }
-    static class KategoriaItem { int id; String izena; public KategoriaItem(int id, String izena) { this.id = id; this.izena = izena; } public String toString() { return izena; } }
+    static class BiltegiElementua { int id; String izena; public BiltegiElementua(int id, String izena) { this.id = id; this.izena = izena; } public String toString() { return izena; } }
+    static class HornitzaileElementua { int id; String izena; public HornitzaileElementua(int id, String izena) { this.id = id; this.izena = izena; } public String toString() { return izena; } }
+    static class KategoriaElementua { int id; String izena; public KategoriaElementua(int id, String izena) { this.id = id; this.izena = izena; } public String toString() { return izena; } }
 
-    static class BackgroundPanel extends JPanel {
-        private Image img;
-        public BackgroundPanel() {
+    static class AtzealdekoPanela extends JPanel {
+        private static final long serialVersionUID = 1L;
+        private Image irudia;
+        public AtzealdekoPanela() {
             try {
                 java.net.URL imgURL = MenuLogistika.class.getResource("/birtek_biltegia.png");
-                if (imgURL != null) img = new ImageIcon(imgURL).getImage();
-                else if (new File("src/birtek_biltegia.png").exists()) img = new ImageIcon("src/birtek_biltegia.png").getImage();
+                if (imgURL != null) irudia = new ImageIcon(imgURL).getImage();
+                else if (new File("src/birtek_biltegia.png").exists()) irudia = new ImageIcon("src/birtek_biltegia.png").getImage();
             } catch (Exception e) { e.printStackTrace(); }
         }
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (img != null) {
-                int panelW = getWidth(); int panelH = getHeight(); int imgW = img.getWidth(this); int imgH = img.getHeight(this);
+            if (irudia != null) {
+                int panelW = getWidth(); int panelH = getHeight(); int imgW = irudia.getWidth(this); int imgH = irudia.getHeight(this);
                 if (imgW > 0 && imgH > 0) {
-                    double scale = Math.max((double)panelW / imgW, (double)panelH / imgH);
-                    int newW = (int) (imgW * scale); int newH = (int) (imgH * scale);
+                    double eskalatzea = Math.max((double)panelW / imgW, (double)panelH / imgH);
+                    int newW = (int) (imgW * eskalatzea); int newH = (int) (imgH * eskalatzea);
                     int x = (panelW - newW) / 2; int y = (panelH - newH) / 2;
-                    g.drawImage(img, x, y, newW, newH, this);
-                } else { g.drawImage(img, 0, 0, panelW, panelH, this); }
+                    g.drawImage(irudia, x, y, newW, newH, this);
+                } else { g.drawImage(irudia, 0, 0, panelW, panelH, this); }
                 g.setColor(new Color(0, 0, 0, 100)); g.fillRect(0, 0, panelW, panelH);
             } else { g.setColor(new Color(245, 245, 245)); g.fillRect(0, 0, getWidth(), getHeight()); }
         }

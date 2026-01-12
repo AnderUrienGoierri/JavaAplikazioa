@@ -1,4 +1,4 @@
-package birtek_interfaze_grafikoa;
+package entrega_fitxaketak_birtek_db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

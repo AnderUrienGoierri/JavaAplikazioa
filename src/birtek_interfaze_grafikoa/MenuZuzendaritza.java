@@ -6,96 +6,99 @@ import java.awt.*;
 import java.sql.*;
 
 public class MenuZuzendaritza extends JFrame {
-    
-    private int uId;
-    private String uIzena;
-    private String uAbizena;
-    private String uSaila;
+
+    private static final long serialVersionUID = 1L;
+    private int erabiltzaileId;
+    private String erabiltzaileIzena;
+    private String erabiltzaileAbizena;
+    private String erabiltzaileSaila;
 
     // Fitxaketa
-    private JLabel lblFitxaketaInfo;
+    private JLabel fitxaketaInfoEtiketa;
 
-    // --- ERAIKITZAILEA EGUNERATUA ---
+    /**
+     * Eraikitzailea eguneratua.
+     */
     public MenuZuzendaritza (int id, String izena, String abizena, String saila) {
-        this.uId = id;
-        this.uIzena = izena;
-        this.uAbizena = abizena;
-        this.uSaila = saila;
+        this.erabiltzaileId = id;
+        this.erabiltzaileIzena = izena;
+        this.erabiltzaileAbizena = abizena;
+        this.erabiltzaileSaila = saila;
         
         setTitle("Birtek - SISTEMAK (Super Admin)");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 800, 500); // Pixka bat handitu dugu
+        setBounds(100, 100, 800, 500); 
         getContentPane().setLayout(new BorderLayout());
 
         // HEADER
-        JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        JPanel goikoPanela = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         
-        JLabel lblUser = new JLabel(uSaila + " | " + uIzena + " " + uAbizena + " (ID: " + uId + ")");
-        lblUser.setFont(new Font("SansSerif", Font.BOLD, 12));
-        lblUser.setForeground(new Color(0, 102, 102));
+        JLabel erabiltzaileEtiketa = new JLabel(erabiltzaileSaila + " | " + erabiltzaileIzena + " " + erabiltzaileAbizena + " (ID: " + erabiltzaileId + ")");
+        erabiltzaileEtiketa.setFont(new Font("SansSerif", Font.BOLD, 12));
+        erabiltzaileEtiketa.setForeground(new Color(0, 102, 102));
         
-        // Fitxaketa Panela hemen ere!
-        JPanel panelFitxaketa = new JPanel();
-        panelFitxaketa.setLayout(new BoxLayout(panelFitxaketa, BoxLayout.Y_AXIS));
-        JPanel panelBtns = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
+        // Fitxaketa Panela
+        JPanel fitxaketaPanela = new JPanel();
+        fitxaketaPanela.setLayout(new BoxLayout(fitxaketaPanela, BoxLayout.Y_AXIS));
+        JPanel botoiPanela = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
         
-        JButton btnSarrera = new JButton("Sarrera");
-        btnSarrera.setBackground(new Color(34, 139, 34)); btnSarrera.setForeground(Color.BLACK);
-        btnSarrera.setFont(new Font("SansSerif", Font.BOLD, 10));
-        btnSarrera.addActionListener(e -> fitxatu("Sarrera"));
+        JButton sarreraBotoia = new JButton("Sarrera");
+        sarreraBotoia.setBackground(new Color(34, 139, 34)); sarreraBotoia.setForeground(Color.BLACK);
+        sarreraBotoia.setFont(new Font("SansSerif", Font.BOLD, 10));
+        sarreraBotoia.addActionListener(e -> fitxatu("Sarrera"));
 
-        JButton btnIrteera = new JButton("Irteera");
-        btnIrteera.setBackground(new Color(255, 140, 0)); btnIrteera.setForeground(Color.BLACK);
-        btnIrteera.setFont(new Font("SansSerif", Font.BOLD, 10));
-        btnIrteera.addActionListener(e -> fitxatu("Irteera"));
+        JButton irteeraBotoia = new JButton("Irteera");
+        irteeraBotoia.setBackground(new Color(255, 140, 0)); irteeraBotoia.setForeground(Color.BLACK);
+        irteeraBotoia.setFont(new Font("SansSerif", Font.BOLD, 10));
+        irteeraBotoia.addActionListener(e -> fitxatu("Irteera"));
 
-        JButton btnHistoriala = new JButton("Historiala");
-        btnHistoriala.setBackground(new Color(100, 149, 237)); btnHistoriala.setForeground(Color.BLACK);
-        btnHistoriala.setFont(new Font("SansSerif", Font.BOLD, 10));
-        btnHistoriala.addActionListener(e -> ikusiFitxaketaHistoriala());
+        JButton historialBotoia = new JButton("Historiala");
+        historialBotoia.setBackground(new Color(100, 149, 237)); historialBotoia.setForeground(Color.BLACK);
+        historialBotoia.setFont(new Font("SansSerif", Font.BOLD, 10));
+        historialBotoia.addActionListener(e -> ikusiFitxaketaHistoriala());
 
-        panelBtns.add(btnSarrera); panelBtns.add(btnIrteera); panelBtns.add(btnHistoriala);
+        botoiPanela.add(sarreraBotoia); botoiPanela.add(irteeraBotoia); botoiPanela.add(historialBotoia);
         
-        lblFitxaketaInfo = new JLabel("Kargatzen...");
-        lblFitxaketaInfo.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        lblFitxaketaInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        fitxaketaInfoEtiketa = new JLabel("Kargatzen...");
+        fitxaketaInfoEtiketa.setFont(new Font("SansSerif", Font.PLAIN, 9));
+        fitxaketaInfoEtiketa.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        panelFitxaketa.add(panelBtns);
-        panelFitxaketa.add(lblFitxaketaInfo);
+        fitxaketaPanela.add(botoiPanela);
+        fitxaketaPanela.add(fitxaketaInfoEtiketa);
 
-        panelTop.add(lblUser);
-        panelTop.add(panelFitxaketa);
-        getContentPane().add(panelTop, BorderLayout.NORTH);
+        goikoPanela.add(erabiltzaileEtiketa);
+        goikoPanela.add(fitxaketaPanela);
+        getContentPane().add(goikoPanela, BorderLayout.NORTH);
 
         // BOTONES CENTRALES
-        JPanel panelBotones = new JPanel(new GridLayout(3, 2, 15, 15));
-        panelBotones.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel botoiPanelaNagusia = new JPanel(new GridLayout(3, 2, 15, 15));
+        botoiPanelaNagusia.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        JButton b1 = new JButton("ADMINISTRAZIOA"); 
-        b1.addActionListener(e -> new MenuAdministrazioa(uId, uIzena, uAbizena, "AdminMode").setVisible(true));
+        JButton adminBotoia = new JButton("ADMINISTRAZIOA"); 
+        adminBotoia.addActionListener(e -> new MenuAdministrazioa(erabiltzaileId, erabiltzaileIzena, erabiltzaileAbizena, "AdminMode").setVisible(true));
         
-        JButton b2 = new JButton("TEKNIKOA"); 
-        b2.addActionListener(e -> new MenuTeknikoa(uId, uIzena, uAbizena, "SatMode").setVisible(true));
+        JButton teknikariBotoia = new JButton("TEKNIKOA"); 
+        teknikariBotoia.addActionListener(e -> new MenuTeknikoa(erabiltzaileId, erabiltzaileIzena, erabiltzaileAbizena, "SatMode").setVisible(true));
         
-        JButton b3 = new JButton("SALMENTAK"); 
-        b3.addActionListener(e -> new MenuSalmentak(uId, uIzena, uAbizena, "SalesMode").setVisible(true));
+        JButton salmentaBotoia = new JButton("SALMENTAK"); 
+        salmentaBotoia.addActionListener(e -> new MenuSalmentak(erabiltzaileId, erabiltzaileIzena, erabiltzaileAbizena, "SalesMode").setVisible(true));
         
-        JButton b4 = new JButton("LOGISTIKA"); 
-        b4.addActionListener(e -> new MenuLogistika(uId, uIzena, uAbizena, "LogisMode").setVisible(true));
+        JButton logistikaBotoia = new JButton("LOGISTIKA"); 
+        logistikaBotoia.addActionListener(e -> new MenuLogistika(erabiltzaileId, erabiltzaileIzena, erabiltzaileAbizena, "LogisMode").setVisible(true));
         
-        JButton b5 = new JButton("DB CHECK"); 
-        b5.addActionListener(e -> JOptionPane.showMessageDialog(this, "Konexioa OK"));
+        JButton probaBotoia = new JButton("DB CHECK"); 
+        probaBotoia.addActionListener(e -> JOptionPane.showMessageDialog(this, "Konexioa OK"));
         
-        JButton btnExit = new JButton("SAIOA ITXI");
-        btnExit.setBackground(Color.RED);
-        btnExit.setForeground(Color.WHITE);
-        btnExit.addActionListener(e -> cerrarSesion());
+        JButton saioaItxiBotoia = new JButton("SAIOA ITXI");
+        saioaItxiBotoia.setBackground(Color.RED);
+        saioaItxiBotoia.setForeground(Color.WHITE);
+        saioaItxiBotoia.addActionListener(e -> saioaItxi());
 
-        panelBotones.add(b1); panelBotones.add(b2);
-        panelBotones.add(b3); panelBotones.add(b4);
-        panelBotones.add(b5); panelBotones.add(btnExit);
+        botoiPanelaNagusia.add(adminBotoia); botoiPanelaNagusia.add(teknikariBotoia);
+        botoiPanelaNagusia.add(salmentaBotoia); botoiPanelaNagusia.add(logistikaBotoia);
+        botoiPanelaNagusia.add(probaBotoia); botoiPanelaNagusia.add(saioaItxiBotoia);
 
-        getContentPane().add(panelBotones, BorderLayout.CENTER);
+        getContentPane().add(botoiPanelaNagusia, BorderLayout.CENTER);
 
         if (!java.beans.Beans.isDesignTime()) {
             eguneratuFitxaketaEgoera();
@@ -106,11 +109,11 @@ public class MenuZuzendaritza extends JFrame {
 
     // --- FITXAKETA LOGIKA (Berdina) ---
     private void fitxatu(String mota) {
-        String sqlCheck = "SELECT mota FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
-        try (Connection con = DB_konexioa.konektatu()) {
-            try (PreparedStatement pstCheck = con.prepareStatement(sqlCheck)) {
-                pstCheck.setInt(1, this.uId);
-                try (ResultSet rs = pstCheck.executeQuery()) {
+        String egiaztatuGaldera = "SELECT mota FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
+        try (Connection konexioa = DB_Konexioa.konektatu()) {
+            try (PreparedStatement pstEgiaztatu = konexioa.prepareStatement(egiaztatuGaldera)) {
+                pstEgiaztatu.setInt(1, this.erabiltzaileId);
+                try (ResultSet rs = pstEgiaztatu.executeQuery()) {
                     String azkenMota = null;
                     if (rs.next()) azkenMota = rs.getString("mota");
                     if ("Sarrera".equals(mota) && "Sarrera".equals(azkenMota)) {
@@ -124,11 +127,11 @@ public class MenuZuzendaritza extends JFrame {
                     }
                 }
             }
-            String sqlInsert = "INSERT INTO fitxaketak (langilea_id, mota) VALUES (?, ?)";
-            try (PreparedStatement pstInsert = con.prepareStatement(sqlInsert)) {
-                pstInsert.setInt(1, this.uId);
-                pstInsert.setString(2, mota);
-                if (pstInsert.executeUpdate() > 0) {
+            String sartuGaldera = "INSERT INTO fitxaketak (langilea_id, mota) VALUES (?, ?)";
+            try (PreparedStatement pstSartu = konexioa.prepareStatement(sartuGaldera)) {
+                pstSartu.setInt(1, this.erabiltzaileId);
+                pstSartu.setString(2, mota);
+                if (pstSartu.executeUpdate() > 0) {
                     JOptionPane.showMessageDialog(this, mota + " erregistratuta.", "Ongi", JOptionPane.INFORMATION_MESSAGE);
                     eguneratuFitxaketaEgoera();
                 }
@@ -137,52 +140,52 @@ public class MenuZuzendaritza extends JFrame {
     }
 
     private void eguneratuFitxaketaEgoera() {
-        String sql = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
-        try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setInt(1, this.uId);
-            ResultSet rs = pst.executeQuery();
+        String galdera = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC LIMIT 1";
+        try (Connection konexioa = DB_Konexioa.konektatu(); PreparedStatement sententzia = konexioa.prepareStatement(galdera)) {
+            sententzia.setInt(1, this.erabiltzaileId);
+            ResultSet rs = sententzia.executeQuery();
             if (rs.next()) {
                 String mota = rs.getString("mota");
                 Time ordua = rs.getTime("ordua");
                 if ("Sarrera".equals(mota)) {
-                    lblFitxaketaInfo.setText("✅ BARRUAN (" + ordua + ")");
-                    lblFitxaketaInfo.setForeground(new Color(0, 100, 0));
+                    fitxaketaInfoEtiketa.setText("✅ BARRUAN (" + ordua + ")");
+                    fitxaketaInfoEtiketa.setForeground(new Color(0, 100, 0));
                 } else {
-                    lblFitxaketaInfo.setText("❌ KANPOAN (" + ordua + ")");
-                    lblFitxaketaInfo.setForeground(new Color(200, 0, 0));
+                    fitxaketaInfoEtiketa.setText("❌ KANPOAN (" + ordua + ")");
+                    fitxaketaInfoEtiketa.setForeground(new Color(200, 0, 0));
                 }
             } else {
-                lblFitxaketaInfo.setText("⚪ Ez dago erregistrorik.");
-                lblFitxaketaInfo.setForeground(Color.GRAY);
+                fitxaketaInfoEtiketa.setText("⚪ Ez dago erregistrorik.");
+                fitxaketaInfoEtiketa.setForeground(Color.GRAY);
             }
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
     private void ikusiFitxaketaHistoriala() {
-        JDialog dialog = new JDialog(this, "Fitxaketa Historiala", true);
-        dialog.setSize(500, 400);
-        dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new BorderLayout());
+        JDialog elkarrizketa = new JDialog(this, "Fitxaketa Historiala", true);
+        elkarrizketa.setSize(500, 400);
+        elkarrizketa.setLocationRelativeTo(this);
+        elkarrizketa.setLayout(new BorderLayout());
         String[] zutabeak = {"Mota", "Data", "Ordua"};
-        DefaultTableModel model = new DefaultTableModel(zutabeak, 0);
-        JTable table = new JTable(model);
-        dialog.add(new JScrollPane(table), BorderLayout.CENTER);
+        DefaultTableModel eredua = new DefaultTableModel(zutabeak, 0);
+        JTable taula = new JTable(eredua);
+        elkarrizketa.add(new JScrollPane(taula), BorderLayout.CENTER);
         
-        String sql = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC";
-        try (Connection con = DB_konexioa.konektatu(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setInt(1, this.uId);
-            ResultSet rs = pst.executeQuery();
+        String galdera = "SELECT mota, data, ordua FROM fitxaketak WHERE langilea_id = ? ORDER BY id_fitxaketa DESC";
+        try (Connection konexioa = DB_Konexioa.konektatu(); PreparedStatement sententzia = konexioa.prepareStatement(galdera)) {
+            sententzia.setInt(1, this.erabiltzaileId);
+            ResultSet rs = sententzia.executeQuery();
             while (rs.next()) {
-                model.addRow(new Object[]{rs.getString("mota"), rs.getDate("data"), rs.getTime("ordua")});
+                eredua.addRow(new Object[]{rs.getString("mota"), rs.getDate("data"), rs.getTime("ordua")});
             }
         } catch (SQLException e) { e.printStackTrace(); }
-        dialog.setVisible(true);
+        elkarrizketa.setVisible(true);
     }
 
-    private void cerrarSesion() {
-        if (JOptionPane.showConfirmDialog(this, "Irten?", "Logout", JOptionPane.YES_NO_OPTION) == 0) {
+    private void saioaItxi() {
+        if (JOptionPane.showConfirmDialog(this, "Irten?", "Saioa Itxi", JOptionPane.YES_NO_OPTION) == 0) {
             dispose();
-            new LoginPanela().setVisible(true);
+            new SaioaHastekoPanela().setVisible(true);
         }
     }
 }
