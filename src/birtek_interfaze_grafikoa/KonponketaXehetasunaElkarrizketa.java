@@ -77,7 +77,7 @@ public class KonponketaXehetasunaElkarrizketa extends JDialog {
 
             int emaitza = sententziaPrestatua.executeUpdate();
             if (emaitza > 0) {
-                JOptionPane.showMessageDialog(this, "Ongi eguneratu da!");
+                // JOptionPane.showMessageDialog(this, "Ongi eguneratu da!");
                 dispose();
             }
 

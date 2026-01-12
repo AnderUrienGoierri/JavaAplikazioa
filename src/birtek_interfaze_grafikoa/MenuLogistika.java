@@ -251,7 +251,7 @@ public class MenuLogistika extends JFrame {
                 pstInsert.setInt(1, this.erabiltzaileId);
                 pstInsert.setString(2, mota);
                 if (pstInsert.executeUpdate() > 0) {
-                    JOptionPane.showMessageDialog(this, mota + " erregistratuta.", "Ongi", JOptionPane.INFORMATION_MESSAGE);
+                    // JOptionPane.showMessageDialog(this, mota + " erregistratuta.", "Ongi", JOptionPane.INFORMATION_MESSAGE);
                     eguneratuFitxaketaEgoera();
                 }
             }
@@ -635,7 +635,7 @@ public class MenuLogistika extends JFrame {
                 pstLerroa.setInt(1, sarreraId); pstLerroa.setInt(2, prodId); pstLerroa.setInt(3, kanti); pstLerroa.executeUpdate();
             }
             con.commit();
-            JOptionPane.showMessageDialog(this, "Sarrera ondo sortu da! ID: " + sarreraId);
+            // JOptionPane.showMessageDialog(this, "Sarrera ondo sortu da! ID: " + sarreraId);
             lerroBerriEredua.setRowCount(0); izenaBerriaTestua.setText(""); postaBerriaTestua.setText(""); ifzBerriaTestua.setText("");
             hornitzaileBerriaAukera.setSelected(false); hornitzaileModuaAldatu(); sarreraHautatzaileakKargatu(); 
         } catch (SQLException e) {
@@ -695,7 +695,7 @@ public class MenuLogistika extends JFrame {
         if (aukera == JOptionPane.OK_OPTION) {
             try (Connection con = DB_Konexioa.konektatu(); PreparedStatement pst = con.prepareStatement("INSERT INTO biltegiak (izena, biltegi_sku) VALUES (?, ?)")) {
                 pst.setString(1, izenaEremua.getText()); pst.setString(2, skuEremua.getText()); pst.executeUpdate();
-                biltegiDatuakKargatu(); JOptionPane.showMessageDialog(this, "Biltegia sortuta.");
+                biltegiDatuakKargatu(); // JOptionPane.showMessageDialog(this, "Biltegia sortuta.");
             } catch (Exception e) { JOptionPane.showMessageDialog(this, "Errorea: " + e.getMessage()); }
         }
     }

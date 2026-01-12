@@ -118,7 +118,7 @@ public class FitxaketakKudeatu extends JFrame {
 				sententziaPrestatua.setString(2, (String) motaHautatzailea.getSelectedItem());
 				
 				if (sententziaPrestatua.executeUpdate() > 0) {
-					JOptionPane.showMessageDialog(this, "Fitxaketa ongi gehitu da.");
+					// JOptionPane.showMessageDialog(this, "Fitxaketa ongi gehitu da.");
 					datuakKargatu();
 				}
 			} catch (Exception e) {
@@ -158,7 +158,7 @@ public class FitxaketakKudeatu extends JFrame {
 				sententziaPrestatua.setInt(3, id);
 				
 				if (sententziaPrestatua.executeUpdate() > 0) {
-					JOptionPane.showMessageDialog(this, "Fitxaketa ongi eguneratu da.");
+					// JOptionPane.showMessageDialog(this, "Fitxaketa ongi eguneratu da.");
 					datuakKargatu();
 				}
 			} catch (Exception e) {
@@ -184,7 +184,7 @@ public class FitxaketakKudeatu extends JFrame {
 				sententziaPrestatua.setInt(1, id);
 				
 				if (sententziaPrestatua.executeUpdate() > 0) {
-					JOptionPane.showMessageDialog(this, "Fitxaketa ezabatu da.");
+					// JOptionPane.showMessageDialog(this, "Fitxaketa ezabatu da.");
 					datuakKargatu();
 				}
 			} catch (SQLException e) {

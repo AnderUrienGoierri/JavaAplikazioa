@@ -141,7 +141,7 @@ public class MenuSalmentak extends JFrame {
                 pstSartu.setInt(1, this.erabiltzaileId);
                 pstSartu.setString(2, mota);
                 if (pstSartu.executeUpdate() > 0) {
-                    JOptionPane.showMessageDialog(this, mota + " erregistratuta.", "Ongi", JOptionPane.INFORMATION_MESSAGE);
+                    // JOptionPane.showMessageDialog(this, mota + " erregistratuta.", "Ongi", JOptionPane.INFORMATION_MESSAGE);
                     eguneratuFitxaketaEgoera();
                 }
             }
