@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Ander/Workspace/Java/eclipse-workspace/birtek_interfaze_grafikoa/lib/itextpdf-5.5.13.3.jar"/>
+	<classpathentry kind="lib" path="C:/Ander/Workspace/Java/eclipse-workspace/birtek_interfaze_grafikoa/lib/mysql-connector-j-9.5.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
